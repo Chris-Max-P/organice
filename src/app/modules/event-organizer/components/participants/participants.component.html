@@ -1,14 +1,3 @@
-<!--<mat-expansion-panel>
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Teilnehmer
-    </mat-panel-title>
-    <mat-panel-description>
-
-    </mat-panel-description>
-  </mat-expansion-panel-header>
-</mat-expansion-panel>-->
-
 <section class="participants-overview" (click)="openParticipantsView()">
   <div class="indicator">
     <h3>Teilnehmer</h3>
@@ -18,13 +7,18 @@
       <!--        <mat-icon>check_circle</mat-icon></div>-->
     </div>
     <div>
-      {{event.getNo()}}
+      {{event.getMaybe()}}
       <span class="yellow dot"></span>
       <!--        <mat-icon svgIcon="close"></mat-icon>-->
     </div>
     <div>
-      {{event.getMaybe()}}
+      {{event.getNo()}}
       <span class="red dot"></span>
+      <!--        <mat-icon>help</mat-icon>-->
+    </div>
+    <div>
+      {{event.getNoAnswer()}}
+      <span class="">Keine Antwort</span>
       <!--        <mat-icon>help</mat-icon>-->
     </div>
   </div>

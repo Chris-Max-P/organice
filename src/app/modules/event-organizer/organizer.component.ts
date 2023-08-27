@@ -15,6 +15,7 @@ export class OrganizerComponent implements OnInit {
 
   ngOnInit(): void {
     for (let myEvent of myEvents.events) {
+      // @ts-ignore
       this.events.push(new EventModel(myEvent.name, myEvent.participants));
     }
   }

@@ -1,4 +1,5 @@
 import {Participant} from "./participant.model";
+import {Answer} from "./answer.enum";
 
 export class EventModel {
 
@@ -7,14 +8,18 @@ export class EventModel {
   }
 
   getYes() {
-    return this.participants.filter(p => p.isComing).length;
+    return this.participants.filter(p => p.answer === Answer.YES).length;
   }
 
   getNo() {
-    return this.participants.filter(p => p.isComing == false).length;
+    return this.participants.filter(p => p.answer === Answer.NO).length;
   }
 
   getMaybe() {
-    return this.participants.filter(p => p.isComing == undefined).length;
+    return this.participants.filter(p => p.answer === Answer.MAYBE).length;
+  }
+
+  getNoAnswer() {
+    return this.participants.filter(p => p.answer === undefined).length;
   }
 }

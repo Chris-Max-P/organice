@@ -5,13 +5,12 @@
       "participants": [
         {
           "name": "Marvin",
-          "mail": "undefined",
-          "isComing": true
+          "mail": "undefined"
         },
         {
           "name": "Moritz",
           "mail": "undefined",
-          "isComing": true
+          "answer": "Yes"
         }
       ]
     },
@@ -21,12 +20,12 @@
         {
           "name": "Marvin",
           "mail": "undefined",
-          "isComing": true
+          "answer": "Yes"
         },
         {
           "name": "Julian",
           "mail": "undefined",
-          "isComing": true
+          "answer": "Yes"
         }
       ]
     },
@@ -36,12 +35,12 @@
         {
           "name": "Marvin",
           "mail": "undefined",
-          "isComing": true
+          "answer": "Yes"
         },
         {
           "name": "Aimée",
           "mail": "undefined",
-          "isComing": true
+          "answer": "Yes"
         }
       ]
     }
