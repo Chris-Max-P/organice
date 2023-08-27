@@ -1,0 +1,31 @@
+<!--<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Teilnehmer
+    </mat-panel-title>
+    <mat-panel-description>
+
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+</mat-expansion-panel>-->
+
+<section class="participants-overview" (click)="openParticipantsView()">
+  <div class="indicator">
+    <h3>Teilnehmer</h3>
+    <div>
+      {{event.getYes()}}
+      <span class="green dot"></span>
+      <!--        <mat-icon>check_circle</mat-icon></div>-->
+    </div>
+    <div>
+      {{event.getNo()}}
+      <span class="yellow dot"></span>
+      <!--        <mat-icon svgIcon="close"></mat-icon>-->
+    </div>
+    <div>
+      {{event.getMaybe()}}
+      <span class="red dot"></span>
+      <!--        <mat-icon>help</mat-icon>-->
+    </div>
+  </div>
+</section>

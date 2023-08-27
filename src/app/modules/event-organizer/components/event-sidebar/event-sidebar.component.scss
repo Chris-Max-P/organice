@@ -1,0 +1,25 @@
+aside {
+  width: 200px;
+  height: 100vh;
+
+  border-right: 1px solid black;
+}
+
+
+
+.event-list {
+  padding: 0;
+
+  list-style: none;
+}
+
+.event-list li {
+  padding: 0.5em;
+
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.event-list li:hover {
+  background-color: grey;
+}

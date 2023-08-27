@@ -1,0 +1,54 @@
+mat-expansion-panel {
+  width: 50%;
+  margin-inline: auto;
+
+  background-color: grey;
+}
+
+.participants-overview {
+  width: 50%;
+  height: 2em;
+  margin-inline: auto;
+  padding: 1em;
+
+  background-color: grey;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  cursor: pointer;
+}
+
+.indicator {
+  display: flex;
+  flex-flow: row;
+  gap: 2em;
+}
+
+h3 {
+  margin: 0;
+}
+
+.participants {
+  cursor: pointer;
+}
+.participants span {
+  display: block;
+}
+
+.dot {
+  display: inline-block;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}
+
+.green {
+  background-color: green;
+}
+
+.yellow {
+  background-color: #ffd500;
+}
+
+.red {
+  background-color: #a20000;
+}

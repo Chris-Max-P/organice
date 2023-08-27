@@ -1,0 +1,49 @@
+{
+  "events": [
+    {
+      "name": "Essen",
+      "participants": [
+        {
+          "name": "Marvin",
+          "mail": "undefined",
+          "isComing": true
+        },
+        {
+          "name": "Moritz",
+          "mail": "undefined",
+          "isComing": true
+        }
+      ]
+    },
+    {
+      "name": "Open chill",
+      "participants": [
+        {
+          "name": "Marvin",
+          "mail": "undefined",
+          "isComing": true
+        },
+        {
+          "name": "Julian",
+          "mail": "undefined",
+          "isComing": true
+        }
+      ]
+    },
+    {
+      "name": "Rodeln",
+      "participants": [
+        {
+          "name": "Marvin",
+          "mail": "undefined",
+          "isComing": true
+        },
+        {
+          "name": "Aimée",
+          "mail": "undefined",
+          "isComing": true
+        }
+      ]
+    }
+  ]
+}

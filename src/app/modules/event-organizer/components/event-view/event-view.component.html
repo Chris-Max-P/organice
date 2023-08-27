@@ -1,0 +1,40 @@
+<main>
+  <participants-view [event]="event"></participants-view>
+
+  <section class="add-participant">
+    <label for="add">Teilnehmer hinzufügen:</label>
+    <input id="add" type="text" (keyup.enter)="addInput()">
+
+    <mat-checkbox [(ngModel)]="isComing">
+      <mat-label>Kommt?</mat-label>
+    </mat-checkbox>
+
+  </section>
+
+  <section class="message">
+    <textarea [(ngModel)]="text"></textarea>
+    <button (click)="sendMail()">An alle senden</button>
+    <!--      https://www.abstractapi.com/guides/send-email-from-angular-->
+  </section>
+
+  <section class="participants-table">
+    <table class="participants-list">
+      <thead>
+      <tr>
+        <th class="column-header">Name</th>
+        <th class="column-header">Status</th>
+        <th class="column-header">Mail</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let parti of event.participants" class="data">
+        <th class="name">{{parti.name}}</th>
+        <th>Ja</th>
+        <th>
+          <mat-icon>mail</mat-icon>
+        </th>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</main>

@@ -1,0 +1,47 @@
+.add-participant {
+  margin: 1.5em;
+
+  display: flex;
+  gap: 1em;
+}
+
+
+.message {
+  margin: 1.5em;
+}
+
+.message textarea {
+  height: 150px;
+  width: 380px;
+}
+
+
+
+.participants-table {
+  margin: 1.5em;
+}
+
+table, tr, th, td {
+  border: 1px solid #eee;
+  border-collapse: collapse;
+  padding: 0.5rem;
+}
+
+thead {
+  font-weight: bolder;
+}
+
+.data {
+  text-align: left;
+  font-weight: lighter;
+}
+
+.data:nth-child(even) {
+  background-color: lightgrey;
+}
+
+.column-header {
+  border-bottom: 2px solid #d3d3d3;
+
+  text-align: left;
+}
