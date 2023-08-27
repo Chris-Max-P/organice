@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {EventModel} from "./models/event.model";
+import {Event} from "./models/event.model";
 import myEvents from '@assets/myEvents.json';
 
 @Component({
@@ -9,14 +9,14 @@ import myEvents from '@assets/myEvents.json';
 })
 export class OrganizerComponent implements OnInit {
 
-  events: EventModel[] = [];
+  events: Event[] = [];
 
   constructor() { }
 
   ngOnInit(): void {
-    for (let myEvent of myEvents.events) {
+    for (let myEvent of myEvents) {
       // @ts-ignore
-      this.events.push(new EventModel(myEvent.name, myEvent.participants));
+      this.events.push(new Event(myEvent.name, myEvent.participants));
     }
   }
 }

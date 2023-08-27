@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {EventModel} from "../../models/event.model";
+import {Event} from "../../models/event.model";
 import {Participant} from "../../models/participant.model";
 import {HttpClient} from "@angular/common/http";
 import {Answer} from "../../models/answer.enum";
@@ -11,7 +11,7 @@ import {Answer} from "../../models/answer.enum";
 })
 export class EventViewComponent implements OnInit {
 
-  @Input() event!: EventModel;
+  @Input() event!: Event;
   yes = Answer.YES;
   no = Answer.NO;
   maybe = Answer.MAYBE;

@@ -1,7 +1,5 @@
 const nodemailer = require("nodemailer");
-var express = require('express');
 const fs = require("fs");
-var app = express();
 
 let login = JSON.parse(fs.readFileSync('../assets/mail-login.json'));
 let mail = login.mail;
@@ -34,26 +32,3 @@ async function sendMail(recipient, text) {
 
 module.exports = { sendMail };
 
-/*
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.get('/mail', function (req, res) {
-  main().catch(console.error);
-  // console.log(req);
-  res.send(req);
-})
-
-app.post('/send-mail', function (req, res) {
-  main(req.body.text).catch(console.error);
-  console.log(req);
-  res.send(req);
-})
-
-var server = app.listen(8081, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log("Example app listening at http://%s:%s", host, port)
-})
-*/

@@ -1,7 +1,7 @@
 import {Participant} from "./participant.model";
 import {Answer} from "./answer.enum";
 
-export class EventModel {
+export class Event {
 
   constructor(public name: string,
               public participants: Participant[]) {

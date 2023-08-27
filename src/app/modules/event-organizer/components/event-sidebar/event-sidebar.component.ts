@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {EventModel} from "../../models/event.model";
+import {Event} from "../../models/event.model";
 
 @Component({
   selector: 'event-sidebar[events]',
@@ -8,7 +8,7 @@ import {EventModel} from "../../models/event.model";
 })
 export class EventSidebarComponent implements OnInit {
 
-  @Input() events: EventModel[] = [];
+  @Input() events: Event[] = [];
 
   constructor() { }
 

@@ -1,48 +1,46 @@
-{
-  "events": [
-    {
-      "name": "Essen",
-      "participants": [
-        {
-          "name": "Marvin",
-          "mail": "undefined"
-        },
-        {
-          "name": "Moritz",
-          "mail": "undefined",
-          "answer": "Yes"
-        }
-      ]
-    },
-    {
-      "name": "Open chill",
-      "participants": [
-        {
-          "name": "Marvin",
-          "mail": "undefined",
-          "answer": "Yes"
-        },
-        {
-          "name": "Julian",
-          "mail": "undefined",
-          "answer": "Yes"
-        }
-      ]
-    },
-    {
-      "name": "Rodeln",
-      "participants": [
-        {
-          "name": "Marvin",
-          "mail": "undefined",
-          "answer": "Yes"
-        },
-        {
-          "name": "Aimée",
-          "mail": "undefined",
-          "answer": "Yes"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "name": "Essen",
+    "participants": [
+      {
+        "name": "Marvin",
+        "mail": "undefined"
+      },
+      {
+        "name": "Moritz",
+        "mail": "undefined",
+        "answer": "Yes"
+      }
+    ]
+  },
+  {
+    "name": "Open chill",
+    "participants": [
+      {
+        "name": "Marvin",
+        "mail": "undefined",
+        "answer": "Yes"
+      },
+      {
+        "name": "Julian",
+        "mail": "undefined",
+        "answer": "Yes"
+      }
+    ]
+  },
+  {
+    "name": "Rodeln",
+    "participants": [
+      {
+        "name": "Marvin",
+        "mail": "undefined",
+        "answer": "Yes"
+      },
+      {
+        "name": "Aimée",
+        "mail": "undefined",
+        "answer": "Yes"
+      }
+    ]
+  }
+]
