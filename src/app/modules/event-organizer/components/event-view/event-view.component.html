@@ -12,17 +12,19 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let participant of event.participants" class="data">
-        <th class="name">{{participant.name}}</th>
-        <th>
-          {{participant.answer === undefined ? '?' : participant.answer}}
-        </th>
-        <th>
-          <button (click)="changeIsComing(participant, yes)">Ja</button>
-          <button (click)="changeIsComing(participant, no)">Nein</button>
-          <button (click)="changeIsComing(participant, maybe)">Vll</button>
-        </th>
-      </tr>
+      <ng-container *ngIf="event">
+        <tr *ngFor="let participant of event.participants" class="data">
+          <th class="name">{{participant.name}}</th>
+          <th>
+            {{participant.answer === undefined ? '?' : participant.answer}}
+          </th>
+          <th>
+            <button (click)="changeIsComing(participant, yes)">Ja</button>
+            <button (click)="changeIsComing(participant, no)">Nein</button>
+            <button (click)="changeIsComing(participant, maybe)">Vll</button>
+          </th>
+        </tr>
+      </ng-container>
       </tbody>
     </table>
   </section>

@@ -2,7 +2,6 @@ const express = require("express");
 const mongodb = require("./mongodb");
 
 const app = express();
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -30,22 +29,32 @@ process.on('SIGINT', function () {
 
 
 
-// API endpoints
-app.get('/mail', function (req, res) {
-  main().catch(console.error);
-  // console.log(req);
-  res.send(req);
-})
-
+// ------- API endpoints -------
 app.post('/send-mail', function (req, res) {
   main(req.body.text).catch(console.error);
   console.log(req);
   res.send(req);
-})
-
-app.get('/test', function (req, res) {
-  console.log(req);
-  mongodb.find().then((result) => {
-    res.send(result);
-  });
 });
+
+app.post('/mongodb', function (req, res) {
+  console.log(req);
+  switch (req.body.action) {
+    case RestRequestEnum.SAVE: mongodb.save(req.body.event); break;
+  }
+  res.send('ok');
+});
+
+app.get('/mongodb', async function (req, res) {
+  console.log(req);
+  let response;
+  switch (req.body.action) {
+    case RestRequestEnum.READ: response = await mongodb.findAll(); break;
+  }
+  res.send(response);
+});
+
+const RestRequestEnum = {
+  SAVE: 'SAVE',
+  READ: 'READ',
+  DELETE: 'DELETE',
+}

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Event} from "./models/event.model";
 import myEvents from '@assets/myEvents.json';
+import {RestService} from "@shared/services/rest.service";
 
 @Component({
   selector: 'app-organizer',
@@ -14,9 +15,5 @@ export class OrganizerComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    for (let myEvent of myEvents) {
-      // @ts-ignore
-      this.events.push(new Event(myEvent.name, myEvent.participants));
-    }
   }
 }

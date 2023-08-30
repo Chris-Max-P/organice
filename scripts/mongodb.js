@@ -1,8 +1,8 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const events = require("../src/assets/myEvents.json");
 
 // Replace the placeholder with your Atlas connection string
 const uri = "mongodb://127.0.0.1:27017/organice";
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri,  {
     serverApi: {
@@ -34,24 +34,28 @@ function close() {
   client.close();
 }
 
-async function insert() {
+run().catch(console.dir);
+
+
+// ------- CRUD operations -------
+
+async function insert(event) {
   const myColl = myDB.collection("events");
 
-  const result = await myColl.insertMany(events);
+  const result = await myColl.insertOne(event);
   console.log(
-    `A document was inserted with the _id: ${result.insertedIds}`,
+    `A document was inserted with the _id: ${result.insertedId}`,
   );
 }
 
-async function find() {
+async function findAll() {
   const myColl = myDB.collection("events");
   return await myColl.find({}).toArray();
 }
 
-run().catch(console.dir);
-
 module.exports = {
-  find,
+  findAll,
+  save: insert,
   openDbConnection: run,
   closeDbConnection: close,
 };

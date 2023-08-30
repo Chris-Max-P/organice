@@ -2,22 +2,22 @@
   <div class="indicator">
     <h3>Teilnehmer</h3>
     <div>
-      {{event.getYes()}}
+      {{eventService.getYes(event)}}
       <span class="green dot"></span>
       <!--        <mat-icon>check_circle</mat-icon></div>-->
     </div>
     <div>
-      {{event.getMaybe()}}
+      {{eventService.getMaybe(event)}}
       <span class="yellow dot"></span>
       <!--        <mat-icon svgIcon="close"></mat-icon>-->
     </div>
     <div>
-      {{event.getNo()}}
+      {{eventService.getNo(event)}}
       <span class="red dot"></span>
       <!--        <mat-icon>help</mat-icon>-->
     </div>
     <div>
-      {{event.getNoAnswer()}}
+      {{eventService.getNoAnswer(event)}}
       <span class="">Keine Antwort</span>
       <!--        <mat-icon>help</mat-icon>-->
     </div>
