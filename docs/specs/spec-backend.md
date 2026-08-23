@@ -24,6 +24,9 @@ Dieses Dashboard ist Teil des Admin-Tools, nicht der Endnutzer-PWA — siehe [AD
 **Offene Fragen**
 - Keine offen.
 
+**Status**
+- Implementierung vorerst zurückgestellt: Scope ist aktuell auf ein einzelnes Event beschränkt (siehe Abschnitt 3), kein bestehender Service referenziert `event_id`. Modul wird erst umgesetzt, wenn Mehr-Event-Fähigkeit gebraucht wird.
+
 ---
 
 ## 2. Google-Integration-Service
@@ -133,7 +136,7 @@ Dieses Dashboard ist Teil des Admin-Tools, nicht der Endnutzer-PWA — siehe [AD
   - `Zeitstempel` → `timestamp`
   - `Vorname` + `Nachname` → `firstName`, `lastName`, sowie zusammengesetzt `name`
   - `Ticketkategorie (Preis pro Person inkl. Verpflegung)` → `category`
-  - `Mitmachen` → `wantsToHelp` (fließt in die Teilnehmerliste ein, wird aber nicht aggregiert, siehe Abschnitt 7)
+  - `Mitmachen` → `wantsToHelp` (fließt in die Teilnehmerliste ein, ist auch ein gültiges Aggregationskriterium, siehe Abschnitt 7)
   - `E-Mail-Adresse` → **ignoriert**, kein Feld im Ticket-Model
 - Preis-Zuordnung (fest hardcodiert, Kategorie-String → Preis):
 
@@ -188,10 +191,10 @@ Dieses Dashboard ist Teil des Admin-Tools, nicht der Endnutzer-PWA — siehe [AD
 ## 7. Aggregations-Service
 
 **Verantwortung**
-- Generisch: nimmt Sheet-Spaltenüberschrift als Gruppierungskriterium ("gruppiere nach Spalte X")
-- Output: Anzahl + Namensliste je Ausprägung
+- Generisch: nimmt ein TicketEntry-Feld als Gruppierungskriterium ("gruppiere nach Feld X", z. B. `category` oder `wantsToHelp`)
+- Output: pro Ausprägung ein Eintrag mit Anzahl + Liste der zugehörigen Teilnehmer (`firstName`/`lastName` getrennt, nicht das zusammengesetzte `name`-Feld)
+- Format: Array von Objekten `{ value, count, entries: { firstName, lastName }[] }[]`; keine Sortierung durch den Service — Verarbeitungsreihenfolge der TicketEntries. Sortierung ist Aufgabe des Frontends (das verschiedene Sortiermöglichkeiten anbietet)
 - Läuft serverseitig im Node/Express-Backend, direkt auf den TicketEntries (Abschnitt 5); Ergebnis wird über die REST-API (Abschnitt 9) ausgeliefert
-- `wantsToHelp` (Spalte `Mitmachen`) wird nicht als Aggregationskriterium herangezogen — nur Kategorie/andere Sheet-Spalten
 
 **Offene Fragen**
 - Keine offen.

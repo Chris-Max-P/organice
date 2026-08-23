@@ -4,7 +4,7 @@ Kontext für Claude Code. Details siehe jeweilige ADR in `/docs`.
 
 ## Vorgehen beim Implementieren
 In jedem Modul das wir implementieren, gehen wir wie folgt vor. Du führst mich durch die einzelnen Schritte, wenn ich dir sage, dass wir ein Modul implementieren.
-1. sag mir: welche Fragen sind noch offen, um das Modul implementieren zu können. Gib mir die ganze Liste an Fragen aus und führe mich danach einzeln durch die Fragen. Gib mir bei jeder Entscheidung relevante Hintergrundinfos über die Möglichkeiten.
+1. sag mir: welche Fragen sind noch offen, um das Modul implementieren zu können. Gib mir die ganze Liste an Fragen aus und führe mich danach einzeln durch die Fragen. Gib mir bei jeder Entscheidung relevante Hintergrundinfos über die Möglichkeiten. Passe die Specs entsprechend der Antworten an.
 2. erstelle Ordnerstruktur und files mit leeren Methoden
 3. schreibe Tests (test-driven development)
 4. starte Implementierung
