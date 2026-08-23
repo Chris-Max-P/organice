@@ -9,6 +9,7 @@ In jedem Modul das wir implementieren, gehen wir wie folgt vor. Du führst mich 
 3. schreibe Tests (test-driven development)
 4. starte Implementierung
 5. prüfe ob Tests laufen
+6. git: erstelle einen neuen branch, commite die Änderungen und push
 
 ## ADR-Übersicht
 
