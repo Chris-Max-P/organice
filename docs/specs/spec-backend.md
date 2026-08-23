@@ -204,9 +204,10 @@ Dieses Dashboard ist Teil des Admin-Tools, nicht der Endnutzer-PWA — siehe [AD
 ## 8. Finanz-Service
 
 **Verantwortung**
-- **Bezahlt**: Summe aller TicketEntries mit Status "paid"
-- **Erwartet**: Summe aller TicketEntries inkl. "unclear" markierter Payments
-- Währung/Formatierung fix
+- **Bezahlt**: Summe des Preises aller TicketEntries, deren abgeleiteter Zahlungsstatus (Abschnitt 6, `determineTicketPaymentStatus`) "paid" ist
+- **Erwartet**: Summe des Preises **aller** TicketEntries, unabhängig vom Zahlungsstatus (open/unclear/paid) — entspricht dem vollen erwarteten Umsatz, wenn alle Angemeldeten zahlen
+- Zahlungsstatus wird vom Finanz-Service selbst berechnet (nutzt intern `PaymentMatchingService.determineTicketPaymentStatus`, Abschnitt 6) — Aufrufer übergibt nur TicketEntries + Payments (Rohdaten), analog zum Aggregations-Service (Abschnitt 7)
+- Rückgabeformat: rohe Zahlen (`{ paid: number, expected: number }`), auf 2 Nachkommastellen gerundet (defensiv gegen Floating-Point-Summierung) — keine Währungs-/Text-Formatierung im Backend, das ist Aufgabe des Frontends (siehe Schnittstelle-zum-Frontend-Abschnitt)
 - Läuft serverseitig im Node/Express-Backend, Ergebnis wird über die REST-API (Abschnitt 9) ausgeliefert
 
 **Offene Fragen**
