@@ -2,7 +2,7 @@
 
 import { Router } from 'express';
 import { DashboardService } from './dashboard.service.js';
-import { isGroupByField } from './dashboard.types.js';
+import { GROUP_BY_FIELDS, isGroupByField } from './dashboard.types.js';
 
 export function createDashboardRouter(dashboardService: DashboardService): Router {
   const router = Router();
@@ -10,7 +10,7 @@ export function createDashboardRouter(dashboardService: DashboardService): Route
   router.get('/participants', (req, res) => {
     const groupBy = req.query.groupBy;
     if (typeof groupBy !== 'string' || !isGroupByField(groupBy)) {
-      res.status(400).json({ error: 'groupBy muss "category" oder "wantsToHelp" sein' });
+      res.status(400).json({ error: `groupBy muss eins der folgenden sein: ${GROUP_BY_FIELDS.join(', ')}` });
       return;
     }
 
