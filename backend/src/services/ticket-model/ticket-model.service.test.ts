@@ -25,7 +25,7 @@ describe('TicketModelService', () => {
         Zeitstempel: '23.08.2026 12:00:00',
         Vorname: 'Felix',
         Nachname: 'Müller',
-        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '4er / 5er Zimmer',
+        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '4er / 5er Zimmer ➡️ 175€',
         Mitmachen: 'Ja',
         'E-Mail-Adresse': 'felix@example.com',
       },
@@ -40,7 +40,7 @@ describe('TicketModelService', () => {
         firstName: 'Felix',
         lastName: 'Müller',
         name: 'Felix Müller',
-        category: '4er / 5er Zimmer',
+        category: '4er / 5er Zimmer ➡️ 175€',
         price: 175,
         timestamp: '23.08.2026 12:00:00',
         wantsToHelp: 'Ja',
@@ -54,7 +54,7 @@ describe('TicketModelService', () => {
         Zeitstempel: '23.08.2026 12:00:00',
         Vorname: 'Felix',
         Nachname: 'Müller',
-        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '4er / 5er Zimmer',
+        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '4er / 5er Zimmer ➡️ 175€',
         Mitmachen: 'Ja',
         'E-Mail-Adresse': 'felix@example.com',
       },
@@ -67,9 +67,13 @@ describe('TicketModelService', () => {
   });
 
   it.each([
-    ['4er / 5er Zimmer', 175],
-    ['7er / 8er Zimmer', 160],
-    ['Bus / Campervan (begrenzte Stellplätze)', 175],
+    ['4er / 5er Zimmer ➡️ 175€', 175],
+    ['7er / 8er Zimmer ➡️ 160€', 160],
+    ['Bus / Campervan (begrenzte Stellplätze)  ➡️ 175€', 175],
+    ['2er Zimmer ➡️ 190€', 190],
+    ['2er Zimmer (Ausgebucht) ➡️ 190€', 190],
+    ['4er ➡️ 175€', 175],
+    ['4er / 5er Zimmer ➡️ 175€ ', 175],
   ])('löst den Preis für Kategorie "%s" korrekt zu %i € auf', (category, price) => {
     const sheet = buildSheet([
       {
@@ -87,19 +91,19 @@ describe('TicketModelService', () => {
     expect(entry.price).toBe(price);
   });
 
-  it('wirft einen Fehler bei unbekannter Ticketkategorie', () => {
+  it('wirft einen Fehler, wenn die Ticketkategorie keinen Preis enthält', () => {
     const sheet = buildSheet([
       {
         Zeitstempel: '23.08.2026 12:00:00',
         Vorname: 'Felix',
         Nachname: 'Müller',
-        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': 'Unbekannte Kategorie',
+        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': 'Kategorie ohne Preis',
         Mitmachen: 'Ja',
         'E-Mail-Adresse': 'felix@example.com',
       },
     ]);
 
-    expect(() => service.mapToTicketEntries(sheet, 'event-1')).toThrow(/Unbekannte Ticketkategorie/);
+    expect(() => service.mapToTicketEntries(sheet, 'event-1')).toThrow(/Kein Preis in Ticketkategorie gefunden/);
   });
 
   it('mappt mehrere Zeilen', () => {
@@ -108,7 +112,7 @@ describe('TicketModelService', () => {
         Zeitstempel: '23.08.2026 12:00:00',
         Vorname: 'Felix',
         Nachname: 'Müller',
-        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '4er / 5er Zimmer',
+        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '4er / 5er Zimmer ➡️ 175€',
         Mitmachen: 'Ja',
         'E-Mail-Adresse': 'felix@example.com',
       },
@@ -116,7 +120,7 @@ describe('TicketModelService', () => {
         Zeitstempel: '23.08.2026 13:00:00',
         Vorname: 'Anna',
         Nachname: 'Schmidt',
-        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '7er / 8er Zimmer',
+        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': '7er / 8er Zimmer ➡️ 160€',
         Mitmachen: 'Nein',
         'E-Mail-Adresse': 'anna@example.com',
       },

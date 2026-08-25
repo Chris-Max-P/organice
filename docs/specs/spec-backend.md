@@ -225,8 +225,23 @@ Dieses Dashboard ist Teil des Admin-Tools, nicht der Endnutzer-PWA — siehe [AD
   - Oben rechts: Finanzübersicht
   - Darunter: weitere Widgets (Aufgabenstatus etc., später)
 
+**Endpunkte**
+- `GET /dashboard/participants?groupBy=<category|wantsToHelp>` — liefert die Teilnehmerübersicht als Aggregation (Abschnitt 7) über das per Query-Parameter gewählte Feld. `groupBy` ist eine Pflichtangabe, gegen eine feste Whitelist (`category`, `wantsToHelp`) geprüft; ein fehlender oder ungültiger Wert liefert `400 Bad Request`.
+- `GET /dashboard/finance` — liefert die Finanzübersicht (`{ paid, expected }`, Abschnitt 8) ohne Parameter.
+- Je Widget ein eigener Endpunkt (statt einem aggregierten `/dashboard`), damit das Frontend Widgets unabhängig laden kann; bei künftigen weiteren Widgets (Aufgabenstatus etc.) wird nach demselben Muster ein weiterer Endpunkt ergänzt.
+
+**Datenhaltung / Bootstrap**
+- Sheet-Abruf, Mail-Abfrage und Payment-Matching laufen einmalig in einem Bootstrap-Schritt vor dem Start des HTTP-Servers (`app.listen`); Ergebnis (TicketEntries + Payments) lebt danach nur im Arbeitsspeicher des Prozesses (siehe Abschnitt 2/3) und wird von beiden Endpunkten gelesen — kein Re-Fetch pro Request
+- Schlägt der Bootstrap fehl (Sheet oder Mail nicht erreichbar, siehe Fehlerverhalten Abschnitt 2/3), startet der Server nicht (Prozessabbruch) — es gibt nie einen erreichbaren Server ohne Datenstand
+- `event_id`: da der Event-Service zurückgestellt ist (Abschnitt 1), wird im Bootstrap ein fester Platzhalter-Wert verwendet
+
+**Technische Umsetzung**
+- Framework: **Express**, CORS via `cors`-Middleware ohne Origin-Einschränkung (passt zum Kernteam-only-/Kein-Zugriffsschutz-Scope, ADR-003)
+- Serverport über Environment-Variable `PORT` konfigurierbar, mit Default-Fallback
+- Tests der Endpunkte über **`supertest`** gegen die Express-App (ohne echten Server/Port)
+
 **Offene Fragen**
-1. Konkrete Struktur/Aufteilung der REST-Endpunkte (z. B. ein aggregierter `/dashboard`-Endpoint vs. einzelne Endpunkte je Widget) — noch zu spezifizieren.
+- Keine offen.
 
 ---
 

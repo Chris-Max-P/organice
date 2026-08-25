@@ -9,22 +9,22 @@ const COLUMN_LAST_NAME = 'Nachname';
 const COLUMN_CATEGORY = 'Ticketkategorie (Preis pro Person inkl. Verpflegung)';
 const COLUMN_WANTS_TO_HELP = 'Mitmachen';
 
-const PRICE_TABLE: Record<string, number> = {
-  '4er / 5er Zimmer': 175,
-  '7er / 8er Zimmer': 160,
-  'Bus / Campervan (begrenzte Stellplätze)': 175,
-};
+// Der Preis wird direkt aus der Ticketkategorie extrahiert (z.B. "4er / 5er Zimmer ➡️ 175€"),
+// da die Kategorie-Labels im Sheet manuell gepflegt werden und sich Schreibweisen/Leerzeichen
+// ändern können — eine feste Preistabelle wäre bei jeder Sheet-Änderung erneut gebrochen.
+const PRICE_PATTERN = /(\d+)\s*€/;
 
 export class TicketModelService {
   mapToTicketEntries(sheet: SheetTable, event_id: string): TicketEntry[] {
     return sheet.rows.map((row, index) => {
       const firstName = row[COLUMN_FIRST_NAME] ?? '';
       const lastName = row[COLUMN_LAST_NAME] ?? '';
-      const category = row[COLUMN_CATEGORY] ?? '';
-      const price = PRICE_TABLE[category];
-      if (price === undefined) {
-        throw new Error(`Unbekannte Ticketkategorie: "${category}"`);
+      const category = (row[COLUMN_CATEGORY] ?? '').trim();
+      const priceMatch = category.match(PRICE_PATTERN);
+      if (!priceMatch) {
+        throw new Error(`Kein Preis in Ticketkategorie gefunden: "${category}"`);
       }
+      const price = Number(priceMatch[1]);
 
       return {
         id: index + 2,
