@@ -1,35 +1,65 @@
-# ADR-004: Backend-Stack für Admin-Dashboard
+# ADR-004: Backend stack for the admin dashboard
 
 ## Status
-Angenommen
+Accepted
 
-## Kontext
-[ADR-003](./ADR-003-admin-dashboard-trennung.md) trennt das Admin-Dashboard von der Endnutzer-PWA, legt aber die konkrete Technologie noch nicht fest. Zur Wahl standen für die serverseitige Google-Sheet-/Mail-Integration:
-- Serverseitiger Code innerhalb einer Angular-SSR-App (`@angular/ssr`)
-- Ein eigenständiges Node/Express-Backend, entkoppelt von Angular
+## Context
+[ADR-003](./ADR-003-admin-dashboard-trennung.md) separates the admin dashboard
+from the end-user PWA, but does not yet fix the concrete technology. The options
+for the server-side Google Sheet/mail integration were:
+- Server-side code within an Angular SSR app (`@angular/ssr`)
+- A standalone Node/Express backend, decoupled from Angular
 
-Die Backend-Spec (Abschnitt 2, Google-Integration-Service) verlangt, dass Sheet-Link (Secret) und Google-CSV-Zugriff strikt serverseitig bleiben und nie im Frontend-Bundle landen. Bei Angular SSR ist diese Trennung nicht strukturell erzwungen, sondern muss über das Build-Setup aktiv sichergestellt werden (Gefahr, dass server-only Code versehentlich im Client-Bundle landet).
+The backend spec (section 2, Google integration service) requires the sheet link
+(a secret) and Google sheet access to stay strictly server-side and never end up
+in the frontend bundle. With Angular SSR, this separation is not structurally
+enforced but has to be actively ensured through the build setup — with the risk
+that server-only code accidentally lands in the client bundle.
 
-## Entscheidung
-Das Admin-Dashboard besteht aus zwei getrennten Teilen:
-- Einem **eigenständigen Node/Express-Backend**, das sämtliche Secrets sowie die Google-Sheet- und Mail-Integration hält und die aufbereiteten Daten über eine **REST-API** bereitstellt
-- Einer **Angular-Anwendung als Dashboard-Frontend** (client-seitig gerendert, kein SSR, kein PWA-Zwang gemäß ADR-003), die diese Daten per REST/HTTP vom Backend abruft und darstellt
+## Decision
+The admin dashboard consists of two separate parts:
+- A **standalone Node/Express backend** that holds all secrets as well as the
+  Google Sheet and mail integration, and provides the prepared data over a
+  **REST API**
+- An **Angular application as the dashboard frontend** (client-side rendered, no
+  SSR, no PWA obligation per ADR-003), which fetches this data over REST/HTTP
+  from the backend and displays it
 
-Es gibt kein Server-Side Rendering mehr — das Node/Express-Backend liefert ausschließlich JSON über REST, keine fertig gerenderten HTML-Seiten.
+There is no server-side rendering — the Node/Express backend serves exclusively
+JSON over REST, never pre-rendered HTML pages.
 
-## Begründung
-- Secrets (Sheet-Link, Mail-Zugangsdaten) sind strukturell vom Angular-Frontend getrennt: Angular läuft rein client-seitig im Browser und bekommt nie Zugriff auf die serverseitige Integrationslogik, nur auf die REST-Antworten
-- Nutzt vorhandene Angular-Expertise auch fürs Dashboard-Frontend (vgl. [ADR-001](./ADR-001-frontend-stack.md))
-- Node/Express bleibt für die eigentliche Integrationslogik zuständig — geringerer Setup-Aufwand für Sheet-/Mail-Zugriff als Angular SSR, passt zum Lean/MVP-Ansatz der Specs ("Kleinster Slice zuerst")
+## Rationale
+- Secrets (sheet link, mail credentials) are structurally separated from the
+  Angular frontend: Angular runs purely client-side in the browser and never gets
+  access to the server-side integration logic, only to the REST responses
+- Uses the existing Angular expertise for the dashboard frontend as well
+  (cf. [ADR-001](./ADR-001-frontend-stack.md))
+- Node/Express stays responsible for the actual integration logic — less setup
+  effort for sheet/mail access than Angular SSR, and it fits the lean/MVP
+  approach of the specs ("smallest slice first")
 
-## Verworfene Alternativen
-- **Angular SSR** (serverseitiger Code direkt in der Angular-App) — verworfen: zusätzliches Risiko, dass server-only Code (Secrets, `imapflow`) versehentlich in den Client-Bundle gelangt; kein Vorteil gegenüber getrennten Teilen, da UI ohnehin nicht mit der Endnutzer-PWA geteilt wird (ADR-003)
-- **Serverseitig gerenderte HTML-Seiten** (z. B. Template-Engine wie EJS) statt REST-API — verworfen zugunsten einer Angular-SPA für das Dashboard-Frontend
+## Rejected alternatives
+- **Angular SSR** (server-side code directly in the Angular app) — rejected:
+  additional risk that server-only code (secrets, `imapflow`) accidentally ends
+  up in the client bundle; no advantage over separate parts, since the UI is not
+  shared with the end-user PWA anyway (ADR-003)
+- **Server-side rendered HTML pages** (e.g. a template engine such as EJS)
+  instead of a REST API — rejected in favour of an Angular SPA for the dashboard
+  frontend
 
-## Konsequenzen
-- Node/Express liefert nur JSON über REST-Endpunkte; konkrete Struktur/Aufteilung der Endpunkte ist noch offen — nächster Punkt
-- Kein Codesharing (Komponenten/Templates) zwischen Endnutzer-PWA und Dashboard; TypeScript-Interfaces/Models können bei Bedarf dennoch geteilt werden
-- Sheet-Daten benötigen keine Persistenz: sie werden bei jedem App-Start frisch vom Sheet geladen und nur im Arbeitsspeicher gehalten (siehe Backend-Spec, Abschnitt 2)
-- Zahlungsstatus benötigt ebenfalls keine Persistenz: wird bei jedem App-Start neu aus den Mails aufgebaut (siehe Backend-Spec, Abschnitt 6) – Konsequenz: manuelle Korrekturen überleben keinen Neustart, akzeptiert für den MVP bei aktuell geringem Mail-Aufkommen
-- Damit kommt das Dashboard-Backend vorerst ohne eigene Datenbank/Persistenzschicht aus
-- Kein manueller "Mails abfragen"-Button mehr nötig, da Mails ohnehin bei jedem App-Start neu abgefragt werden
+## Consequences
+- Node/Express serves only JSON over REST endpoints; for the concrete structure
+  of the endpoints see the backend spec, section 9
+- No code sharing (components/templates) between the end-user PWA and the
+  dashboard; TypeScript interfaces/models can still be shared if needed. The
+  dashboard frontend currently copies the three response interfaces rather than
+  extracting a shared package — see the frontend spec, section 4
+- Sheet data needs no persistence: it is loaded fresh from the sheet on every app
+  start and only held in memory (see backend spec, section 2)
+- Payment status likewise needs no persistence: it is rebuilt from the mails on
+  every app start (see backend spec, section 6). Consequence: manual corrections
+  do not survive a restart, accepted for the MVP given the currently low mail
+  volume
+- The dashboard backend therefore needs no database or persistence layer for now
+- No manual "fetch mails" button is needed, since mails are re-fetched on every
+  app start anyway

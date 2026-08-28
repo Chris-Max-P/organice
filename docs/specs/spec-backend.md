@@ -1,259 +1,424 @@
-# Spezifikation: Event-Übersicht & Dashboard – Backend
+# Specification: Event Overview & Dashboard – Backend
 
 ---
 
-## Hinweis zur Architektur
+## Feature overview
 
-Dieses Dashboard ist Teil des Admin-Tools, nicht der Endnutzer-PWA — siehe [ADR-003](../adr/ADR-003-admin-dashboard-trennung.md). Es läuft ausschließlich lokal beim Administrator/Kernteam, ohne PWA-Anforderungen (Offline, Manifest, Service Worker).
+| # | Feature | Purpose (short) | Chapter |
+|---|---|---|---|
+| 1 | Event service | Create an event, `event_id` as the base reference for all services (implementation deferred, currently single-event scope) | [Section 1](#1-event-service) |
+| 2 | Google integration service | Read a private Google Sheet via a service account over the Sheets API v4, in-memory, re-fetched on every app start | [Section 2](#2-google-integration-service) |
+| 3 | Mail integration service | Search a hardcoded IMAP mailbox provider-independently by sender/subject/time range; parse PayPal payment mails (amount, name) | [Section 3](#3-mail-integration-service) |
+| 4 | Secrets management service | Central storage of values worth protecting (keyfile, sheet ID, mail credentials) via `.env` + `.gitignore` (`backend/envs/`), server-side | [Section 4](#4-secrets-management-service) |
+| 5 | Ticket/participant model | Map sheet rows to `TicketEntry` (hardcoded column mapping + category→price lookup) | [Section 5](#5-ticketparticipant-model) |
+| 6 | Payment matching service | Assign payment mails to TicketEntries via string name matching (full name / initial+surname); derived status open/paid/unclear, manually overridable | [Section 6](#6-payment-matching-service) |
+| 7 | Aggregation service | Generic grouping of TicketEntries by a field (`category`, `wantsToHelp`) → `{ value, count, entries }[]` | [Section 7](#7-aggregation-service) |
+| 8 | Finance service | Figures `{ paid, expected }` from TicketEntry prices + derived payment status, rounded raw numbers | [Section 8](#8-finance-service) |
+| 9 | Dashboard data API | Express REST API per widget (`/dashboard/participants`, `/dashboard/finance`); bootstrap (sheet + mail + matching) before `app.listen`, in-memory | [Section 9](#9-dashboard-data-api) |
 
 ---
 
-## 1. Event-Service
+## Architecture note
+
+This dashboard is part of the admin tool, not the end-user PWA — see
+[ADR-003](../adr/ADR-003-admin-dashboard-trennung.md). It runs locally for the
+core team only, without PWA requirements (offline, manifest, service worker).
+
+---
+
+## 1. Event service
 
 **Model**
-- Event: id, name, erstellt_am
-- Teilnehmerliste: direkt aus Google-Sheet-Antworten abgeleitet (1:1, kein eigener Verwaltungsmechanismus) → entspricht dem Ticket-/Teilnehmer-Model aus Abschnitt 5
-- Helferliste: Logik folgt später
-- Kein Einladungsmechanismus, keine Rollen, kein Zugriffsschutz (Kernteam-only vorerst)
+- Event: id, name, created_at
+- Participant list: derived directly from the Google Sheet responses (1:1, no
+  separate management mechanism) → corresponds to the ticket/participant model
+  in section 5
+- Helper list: logic to follow later
+- No invitation mechanism, no roles, no access control (core-team-only for now)
 
-**Verantwortung**
-- Event anlegen
-- Basis-Referenz (event_id) für alle anderen Services
-- Zentrale Speicherung, da "gemeinsames Projekt" bedeutet: alle Team-Mitglieder sehen denselben Stand — geht nur mit serverseitiger/zentraler Datenhaltung, nicht rein im Browser
+**Responsibility**
+- Create an event
+- Base reference (event_id) for all other services
+- Central storage, because "shared project" means all team members see the same
+  state — which only works with server-side/central data storage, not purely in
+  the browser
 
-**Offene Fragen**
-- Keine offen.
+**Open questions**
+- None open.
 
 **Status**
-- Implementierung vorerst zurückgestellt: Scope ist aktuell auf ein einzelnes Event beschränkt (siehe Abschnitt 3), kein bestehender Service referenziert `event_id`. Modul wird erst umgesetzt, wenn Mehr-Event-Fähigkeit gebraucht wird.
+- Implementation deferred for now: the scope is currently limited to a single
+  event (see section 3), and no existing service references `event_id`. The
+  module will be built once multi-event capability is needed.
 
 ---
 
-## 2. Google-Integration-Service
+## 2. Google integration service
 
-**Verantwortung**
-- Zugriff auf ein Google Sheet über einen **Service Account** (Google Cloud) – das Sheet wird dem Service Account wie einem normalen Google-Nutzer explizit freigegeben, Sheet bleibt ansonsten privat; kein OAuth-Consent-Flow, kein Nutzer-Login
-- Auth: Service-Account-JSON-Keyfile wird serverseitig geladen, die Google Auth Library erzeugt daraus automatisch die benötigten Access-Tokens
-- Datenabruf über die **Google Sheets API v4**: `GET https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values/{range}` mit Bearer-Token im Request; Response ist JSON (Array von Zeilen) – kein CSV-Parsing mehr nötig
-- Sheet-Daten werden bei **jedem App-Start** neu vom Sheet abgerufen – keine Persistierung, kein Cache. Die Daten leben nur im Arbeitsspeicher des Prozesses und werden bei jedem Neustart frisch aufgebaut
-- **Muss serverseitig laufen**: jetzt primär, weil das Service-Account-Keyfile ein Secret ist (darf nicht im Frontend-Bundle stehen) – der Access-Token wird serverseitig aus dem Keyfile erzeugt, ein Browser hat ohnehin keinen sinnvollen Weg, sich damit zu authentifizieren
+**Responsibility**
+- Access to a Google Sheet via a **service account** (Google Cloud) – the sheet
+  is shared with the service account like with a normal Google user, and
+  otherwise stays private; no OAuth consent flow, no user login
+- Auth: the service account JSON keyfile is loaded server-side; the Google Auth
+  Library uses it to generate the required access tokens automatically
+- Data retrieval via the **Google Sheets API v4**:
+  `GET https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/values/{range}`
+  with a bearer token in the request; the response is JSON (an array of rows) –
+  no CSV parsing needed any more
+- Sheet data is re-fetched from the sheet on **every app start** – no
+  persistence, no cache. The data only lives in the process's memory and is
+  rebuilt fresh on every restart
+- **Must run server-side**: primarily because the service account keyfile is a
+  secret (it must not appear in the frontend bundle) – the access token is
+  generated server-side from the keyfile, and a browser has no sensible way to
+  authenticate with it anyway
 
-**Technische Umsetzung**
-- Library: **`google-auth-library`** (npm) – offizielle Google-Client-Library, übernimmt Laden des Keyfiles und Erzeugen/Erneuern der Access-Tokens (Scope `spreadsheets.readonly`)
-- Konfiguration über Environment-Variablen, verwaltet über Secrets-Management (siehe Abschnitt 4):
-  - `SHEET_ID` – Spreadsheet-ID (aus der Sheet-URL)
-  - `SHEET_NAME` – Name des Tabellenblatts (entspricht dem Range-Parameter der Sheets API, z. B. `Formularantworten 1`)
-  - `GOOGLE_SERVICE_ACCOUNT_KEY_FILE` – Pfad zum Service-Account-JSON-Keyfile
-- Keyfile und `.env`-Datei liegen gemeinsam in einem eigenen, vollständig von der Versionskontrolle ausgeschlossenen Ordner (`envs/`)
+**Technical implementation**
+- Library: **`google-auth-library`** (npm) – the official Google client library;
+  it handles loading the keyfile and generating/renewing the access tokens
+  (scope `spreadsheets.readonly`)
+- Configuration via environment variables, managed through secrets management
+  (see section 4):
+  - `SHEET_ID` – spreadsheet ID (from the sheet URL)
+  - `SHEET_NAME` – name of the worksheet (corresponds to the range parameter of
+    the Sheets API, e.g. `Formularantworten 1`)
+  - `GOOGLE_SERVICE_ACCOUNT_KEY_FILE` – path to the service account JSON keyfile
+- The keyfile and the `.env` file live together in a dedicated folder (`envs/`)
+  that is entirely excluded from version control
 
-**Daten-Model (In-Memory)**
-- Generische Tabellenstruktur (Zeilen × Spalten), gültig für die Laufzeit des Prozesses
+**Data model (in-memory)**
+- A generic table structure (rows × columns), valid for the lifetime of the
+  process
 
-**Hinweis / Trade-off**
-- Zugriff ausschließlich über Service Account, keine öffentliche Einsehbarkeit – das Sheet bleibt privat, der bisherige Datenschutz-Trade-off (öffentlicher Freigabelink, für jeden mit URL einsehbar) entfällt vollständig
-- Ein Sheet hat genau **ein Tabellenblatt** – keine `gid`-Verwaltung/Auswahl mehrerer Blätter nötig; Range referenziert stattdessen Blattname/Zellbereich (z. B. `Formularantworten 1!A:Z`)
+**Note / trade-off**
+- Access exclusively via the service account, no public visibility – the sheet
+  stays private, and the previous privacy trade-off (a public sharing link,
+  readable by anyone with the URL) disappears entirely
+- A sheet has exactly **one worksheet** – no `gid` management/selection of
+  multiple sheets needed; the range references the sheet name/cell range instead
+  (e.g. `Formularantworten 1!A:Z`)
 
-**Fehlerverhalten**
-- Ist das Sheet beim App-Start nicht erreichbar (Netzwerkfehler, fehlende/ungültige Freigabe, ungültiges Keyfile etc.), wird ein Fehler geworfen. Keine stille Anzeige, kein leerer/veralteter Zustand ohne Hinweis.
+**Error behaviour**
+- If the sheet is unreachable at app start (network error, missing/invalid
+  sharing, invalid keyfile, etc.), an error is thrown. No silent display, no
+  empty or stale state without notice.
 
-**Offene Fragen**
-- Keine offen.
+**Open questions**
+- None open.
 
 ---
 
-## 3. Mail-Integration-Service
+## 3. Mail integration service
 
-**Verantwortung**
-- Postfach ist hardcoded (ein Postfach beim Webhoster, IMAP-Zugriff)
-- Mails nach Kriterien durchsuchbar (Absender, Betreff, Zeitraum)
-- Provider soll dabei egal sein (kein providerspezifischer Code)
-- **Muss serverseitig laufen**: IMAP ist ein TCP-basiertes Protokoll, Browser-JavaScript hat keinen API-Zugriff auf rohe Sockets/IMAP
+**Responsibility**
+- The mailbox is hardcoded (one mailbox at the web host, IMAP access)
+- Mails searchable by criteria (sender, subject, time range)
+- The provider should be irrelevant (no provider-specific code)
+- **Must run server-side**: IMAP is a TCP-based protocol, and browser JavaScript
+  has no API access to raw sockets/IMAP
 
-**Technische Umsetzung**
-- Library: **`imapflow`** (npm) – aktiv gepflegt, TypeScript-typisiert, providerunabhängiger IMAP-Standard-Client
-- Benötigte Zugangsdaten: E-Mail, Passwort, IMAP-Host, Port
-- Konfiguration vorerst **nicht über UI**, sondern über **Environment-Variablen** (z. B. `MAIL_USER`, `MAIL_PASSWORD`, `MAIL_HOST`, `MAIL_PORT`), verwaltet über Secrets-Management (siehe Abschnitt 4) – kein Eingabeformular in dieser Version
+**Technical implementation**
+- Library: **`imapflow`** (npm) – actively maintained, TypeScript-typed,
+  provider-independent standard IMAP client
+- Required credentials: email, password, IMAP host, port
+- Configuration for now **not via UI**, but through **environment variables**
+  (e.g. `MAIL_USER`, `MAIL_PASSWORD`, `MAIL_HOST`, `MAIL_PORT`), managed through
+  secrets management (see section 4) – no input form in this version
 
-**Abfrage-Logik (ersetzt vorherigen Polling-/IMAP-IDLE-Ansatz)**
-- Mails werden bei **jedem App-Start** automatisch abgefragt
-- Kein manueller "Mails abfragen"-Button nötig, da ohnehin bei jedem App-Start neu abgefragt wird
-- Kein Hintergrund-Polling, kein IMAP IDLE in dieser Version
-- Da nichts persistiert wird (siehe Abschnitt 6, Trade-off), gibt es keinen gespeicherten "letzter Abruf"-Zeitpunkt – jede Abfrage durchsucht **alle** Mails, die dem Filterkriterium (Absender/Betreff) entsprechen
+**Query logic (replaces the earlier polling/IMAP IDLE approach)**
+- Mails are fetched automatically on **every app start**
+- No manual "fetch mails" button needed, since they are re-fetched on every app
+  start anyway
+- No background polling, no IMAP IDLE in this version
+- Since nothing is persisted (see section 6, trade-off), there is no stored
+  "last fetch" timestamp – every query searches **all** mails matching the filter
+  criteria (sender/subject)
 
-**Fehlerverhalten**
-- Ist das Postfach beim Abfragen (App-Start) nicht erreichbar, wird ein Fehler geworfen. Keine stille Anzeige.
+**Error behaviour**
+- If the mailbox is unreachable while fetching (at app start), an error is
+  thrown. No silent display.
 
 **Scope**
-- Vorerst wird nur **ein einzelnes Event** unterstützt – keine Zuordnung von Zahlungsmails zu mehreren gleichzeitig laufenden Events nötig. Bei mehreren aktiven Events müsste diese Zuordnungslogik nachgezogen werden.
+- For now only a **single event** is supported – no need to assign payment mails
+  to several concurrently running events. With multiple active events, this
+  assignment logic would have to follow.
 
-**Mail-Parsing (PayPal-Zahlungsbestätigung) – geklärt**
-- Mail ist HTML, kein Bild → Body per IMAP als Text/HTML abrufbar, kein OCR nötig
-- Filterkriterium Absender: `service@paypal.de`
-- Betreff: "Du hast eine Zahlung erhalten"
-- Betrag: aus Label-Wert-Paar „Erhaltener Betrag" (robuster als aus Fließtext)
-- Name: aus Überschrift „[Name] hat dir [Betrag] gesendet" per Regex (`(.+?) hat dir`)
-- Zusätzlich verfügbar, optional nutzbar: Transaktionscode, Transaktionsdatum
+**Mail parsing (PayPal payment confirmation) – resolved**
+- The mail is HTML, not an image → the body is retrievable as text/HTML over
+  IMAP, no OCR needed
+- Sender filter criterion: `service@paypal.de`
+- Subject: "Du hast eine Zahlung erhalten"
+- Amount: from the label/value pair "Erhaltener Betrag" (more robust than from
+  running text)
+- Name: from the heading "[Name] hat dir [Betrag] gesendet" via regex
+  (`(.+?) hat dir`)
+- Additionally available, optionally usable: transaction code, transaction date
 
-**Offene Fragen**
-- Keine offen.
+**Open questions**
+- None open.
 
 ---
 
-## 4. Secrets-Management-Service
+## 4. Secrets management service
 
-**Zweck**: Zentrale, wiederverwendbare Ablage schützenswerter Werte (Service-Account-Keyfile, spreadsheetId/Range, Mail-Zugangsdaten) – dürfen nicht im Repository/Codebase landen, insbesondere nicht im Frontend-Bundle.
+**Purpose**: central, reusable storage of values worth protecting (service
+account keyfile, spreadsheetId/range, mail credentials) – these must not end up
+in the repository/codebase, and especially not in the frontend bundle.
 
-**Gängige Optionen**
+**Common options**
 
-| Option | Aufwand | Eignung |
+| Option | Effort | Suitability |
 |---|---|---|
-| `.env`-Datei + `.gitignore` | Minimal | Basis-Schutz gegen versehentlichen Commit, Datei liegt aber unverschlüsselt auf dem Server |
-| Environment-Variablen im Hosting-Admin-Panel | Gering | Von den meisten Webhostern/Deploy-Plattformen angeboten, Werte verschlüsselt beim Anbieter hinterlegt, nicht im Repo sichtbar |
-| Dedizierter Cloud-Secrets-Manager (Google Secret Manager, AWS Secrets Manager, Azure Key Vault) | Mittel | Sinnvoll bei bestehender Cloud-Infra – hier aktuell nicht gegeben |
-| Open-Source-Secrets-Tools (Infisical, Doppler, HashiCorp Vault) | Mittel–Hoch | Für Team-übergreifendes Secret-Sharing, Versionierung, Rotation – ab mehreren Umgebungen/Personen sinnvoll |
+| `.env` file + `.gitignore` | Minimal | Basic protection against accidental commits, but the file sits unencrypted on the server |
+| Environment variables in the hosting admin panel | Low | Offered by most web hosts/deploy platforms, values stored encrypted with the provider, not visible in the repo |
+| Dedicated cloud secrets manager (Google Secret Manager, AWS Secrets Manager, Azure Key Vault) | Medium | Sensible with existing cloud infrastructure – not the case here currently |
+| Open-source secrets tools (Infisical, Doppler, HashiCorp Vault) | Medium–high | For cross-team secret sharing, versioning, rotation – worthwhile from several environments/people onwards |
 
-**Entscheidung für MVP**
-- `.env` + `.gitignore` als Minimalschutz gegen Repo-Leaks
-- Lokal liegen `.env`-Datei und Service-Account-Keyfile gemeinsam im Ordner `backend/envs/`, der vollständig über `.gitignore` ausgeschlossen ist (kein einzelnes Datei-Ignore, da sonst leicht ein neues Secret im Ordner vergessen wird)
-- Tatsächlicher Laufzeitwert über das Environment-Variable-Feature des Webhosters (nicht im Repo)
-- Betrifft: Service-Account-Keyfile (JSON), spreadsheetId und Sheet-Name/Range (Abschnitt 2), Mail-Zugangsdaten E-Mail/Passwort/Host/Port (Abschnitt 3)
-- Läuft ausschließlich serverseitig — niemals ins Frontend-Bundle einbinden
+**Decision for the MVP**
+- `.env` + `.gitignore` as minimal protection against repository leaks
+- Locally, the `.env` file and the service account keyfile live together in the
+  folder `backend/envs/`, which is entirely excluded via `.gitignore` (not a
+  single-file ignore, since it would be too easy to forget a new secret in that
+  folder)
+- The actual runtime value comes from the web host's environment variable
+  feature (not in the repository)
+- Affects: the service account keyfile (JSON), spreadsheetId and sheet
+  name/range (section 2), mail credentials email/password/host/port (section 3)
+- Runs exclusively server-side — never include it in the frontend bundle
 
-**Offene Fragen**
-- Keine offen.
+**Open questions**
+- None open.
 
 ---
 
-## 5. Ticket-/Teilnehmer-Model
+## 5. Ticket/participant model
 
 **Model**
-- TicketEntry: id (Zeilennummer im Google Sheet, 1-basiert, Kopfzeile = Zeile 1 → erste Dateneile = 2), event_id, firstName, lastName, name (zusammengesetzt), category, price (fix je Kategorie), timestamp, wantsToHelp
-- `id` dient dem Payment-Matching-Service (Abschnitt 6) als `ticketEntryRef`; `firstName`/`lastName` werden dort zusätzlich zum zusammengesetzten `name` für den Initial+Nachname-Match benötigt
+- TicketEntry: id (row number in the Google Sheet, 1-based, header = row 1 →
+  first data row = 2), event_id, firstName, lastName, name (composed), category,
+  price (fixed per category), timestamp, wantsToHelp
+- `id` serves the payment matching service (section 6) as `ticketEntryRef`;
+  `firstName`/`lastName` are needed there in addition to the composed `name` for
+  the initial+surname match
 
-**Verantwortung**
-- Sheet-Struktur ist pro Event fix → direktes Mapping Spalte→Feld, im ersten Entwurf hardcoded (kein UI-Mapping-Tool)
-- Spalten-Mapping (Stand aktuelles Formular):
+**Responsibility**
+- The sheet structure is fixed per event → direct column→field mapping,
+  hardcoded in the first draft (no UI mapping tool)
+- Column mapping (as of the current form):
   - `Zeitstempel` → `timestamp`
-  - `Vorname` + `Nachname` → `firstName`, `lastName`, sowie zusammengesetzt `name`
+  - `Vorname` + `Nachname` → `firstName`, `lastName`, as well as the composed
+    `name`
   - `Ticketkategorie (Preis pro Person inkl. Verpflegung)` → `category`
-  - `Mitmachen` → `wantsToHelp` (fließt in die Teilnehmerliste ein, ist auch ein gültiges Aggregationskriterium, siehe Abschnitt 7)
-  - `E-Mail-Adresse` → **ignoriert**, kein Feld im Ticket-Model
-- Preis-Zuordnung (fest hardcodiert, Kategorie-String → Preis):
+  - `Mitmachen` → `wantsToHelp` (feeds into the participant list and is also a
+    valid aggregation criterion, see section 7)
+  - `E-Mail-Adresse` → **ignored**, no field in the ticket model
+- Price assignment: the price is **parsed out of the category label** with the
+  pattern `/(\d+)\s*€/`, not looked up in a fixed table. The labels carry the
+  price in their text, e.g. `4er / 5er Zimmer ➡️ 175€`
+- The label is trimmed before parsing. A category with no parseable price throws
+  an error — no default and no guessed value, consistent with the fail-loudly
+  behaviour of sections 2/3
+- Rationale: the category labels are maintained by hand in the Google Form, so
+  wording and spacing change over time. A fixed price table breaks on every such
+  edit, and breaks silently — parsing the label keeps a single source of truth in
+  the form
+- Consequence: new categories work without a code change, as long as the label
+  contains a price. The trade-off is a dependency on the label format; if someone
+  removes the price from a label, the sheet import fails loudly
+- Provision of the list for the frontend (dashboard/aggregation) over the API
 
-  | Kategorie | Preis |
-  |---|---|
-  | 4er / 5er Zimmer | 175 € |
-  | 7er / 8er Zimmer | 160 € |
-  | Bus / Campervan (begrenzte Stellplätze) | 175 € |
-
-- Bereitstellung der Liste für Frontend (Dashboard/Aggregation) über API
-
-**Offene Fragen**
-- Preis-Tabelle basiert auf den bisher beobachteten Formular-Antworten — falls das Formular weitere Kategorien anbietet, die noch nicht ausgewählt wurden, fehlen diese in der Lookup-Tabelle und müssten ergänzt werden.
+**Open questions**
+- None open.
 
 ---
 
-## 6. Payment-Matching-Service
+## 6. Payment matching service
 
 **Model**
-- Payment: ticketEntryRef (optional — leer bei `unclearReason: name`), amount (optional — leer bei `unclearReason: amount`), paidAt, status (**paid/unclear** — kein `open`, siehe unten), unclearReason (name/amount — nur gesetzt wenn status=unclear), manuallyOverridden (bool)
-- Eine Payment entsteht ausschließlich aus einer tatsächlich eingegangenen Zahlungs-Mail (Abschnitt 3) — daher kein `open` auf diesem Model, dieser Zustand existiert nur abgeleitet (siehe unten)
-- **Abgeleiteter Zahlungsstatus pro TicketEntry** (open/paid/unclear; wird von Abschnitt 7/8/9 konsumiert, nicht direkt auf `Payment` gespeichert):
-  - `paid`, wenn mindestens eine zugeordnete Payment `status: paid` hat
-  - `unclear`, wenn keine `paid`-Payment existiert, aber mindestens eine mit `unclearReason: amount`
-  - `open`, wenn keine zugeordnete Payment existiert
-  - Payments mit `unclearReason: name` (kein `ticketEntryRef`) bleiben als eigenständige, keinem TicketEntry zugeordnete Liste sichtbar ("nicht zuordenbare Payments")
+- Payment: ticketEntryRef (optional — empty when `unclearReason: name`), amount
+  (optional — empty when `unclearReason: amount`), paidAt, status
+  (**paid/unclear** — no `open`, see below), unclearReason (name/amount — only
+  set when status=unclear), manuallyOverridden (bool)
+- A Payment arises exclusively from a payment mail that actually arrived
+  (section 3) — hence no `open` on this model; that state only exists as a
+  derived value (see below)
+- **Derived payment status per TicketEntry** (open/paid/unclear; consumed by
+  sections 7/8/9, not stored directly on `Payment`):
+  - `paid`, when at least one assigned Payment has `status: paid`
+  - `unclear`, when no `paid` Payment exists but at least one with
+    `unclearReason: amount` does
+  - `open`, when no assigned Payment exists
+  - Payments with `unclearReason: name` (no `ticketEntryRef`) remain visible as a
+    separate list not assigned to any TicketEntry ("unassignable payments")
 
-**Verantwortung**
-- Matching über Name, **reines String-Matching ausreichend** (kein Fuzzy-Matching). Ein Treffer liegt vor, wenn mindestens eine der folgenden Regeln zutrifft (Vergleich jeweils case-insensitive, Whitespace getrimmt/normalisiert):
-  1. **Vollname-Match**: `firstName + " " + lastName` (aus Sheet) entspricht dem aus der Mail extrahierten Namen
-  2. **Initial+Nachname-Match**: erster Buchstabe des ersten Worts im Mail-Namen entspricht dem ersten Buchstaben des Vornamens (Sheet), UND das letzte Wort im Mail-Namen entspricht dem Nachnamen (Sheet) — deckt humorvoll abweichende PayPal-Kontonamen ab (z. B. „Felix Müller" → „Fuck Müller")
-  - Annahme: PayPal-Namen bestehen immer aus mindestens zwei Wörtern; ein Doppel-Vorname wird im PayPal-Namen als ein zusammengeschriebenes Wort erwartet, wird also von Regel 2 automatisch mit abgedeckt. Andere Sonderfälle (z. B. zusammengesetzte Nachnamen wie „von Müller") werden vorerst nicht gesondert behandelt.
-- Betrag wird automatisch ausgelesen (siehe Abschnitt 3), fließt aber **nicht** ins automatische Matching ein – Prüfung der Betragshöhe erfolgt manuell durch einen Menschen. Ist der Betrag nicht eindeutig auslesbar, wird er nicht übernommen (kein Rate-/Best-Effort-Wert)
-- Bei Mehrdeutigkeit: Eintrag als "unclear" markiert statt automatisch zugeordnet, mit Grund im Feld `unclearReason`:
-  - `unclearReason: name` — kein Treffer, mehrere Treffer, oder Name aus Mail nicht parsebar (Namens-Matching also nicht eindeutig möglich)
-  - `unclearReason: amount` — Namens-Matching eindeutig, aber Betrag nicht eindeutig auslesbar
-  - Treffen beide Fälle gleichzeitig zu, hat `unclearReason: name` Vorrang (blockiert die eigentliche Zuordnung); ein trotzdem lesbarer Betrag wird dennoch mitgespeichert
-- Status manuell überschreibbar (z. B. Korrektur durch Helfer) — lebt nur im Arbeitsspeicher des laufenden Prozesses, keine Persistierung (siehe Trade-off unten)
-- Verarbeitet Rohdaten aus Abschnitt 3 (Mail), läuft daher zwangsläufig dort, wo diese Daten verfügbar sind: serverseitig
-- Beziehung Payment↔TicketEntry ist **1:n ohne Aggregation** – ein TicketEntry kann mehrere zugeordnete Payments haben (z. B. Doppel-/Teilzahlung), es gibt keine automatische Summenbildung/Schwellenwert-Logik pro TicketEntry; der Mensch entscheidet anhand der einzelnen Einträge
-- Läuft **automatisch bei jedem App-Start**, direkt im Anschluss an Sheet-Abruf (Abschnitt 2) und Mail-Abfrage (Abschnitt 3) – kein manueller Trigger, konsistent mit dem Muster der beiden vorgelagerten Services
-- Matching-Kandidaten: alle TicketEntries des aktuell geladenen Events, keine `event_id`-Filterung (passend zum aktuellen Scope „nur ein Event", siehe Abschnitt 3)
+**Responsibility**
+- Matching by name, **plain string matching is sufficient** (no fuzzy matching).
+  A match exists when at least one of the following rules applies (comparison
+  case-insensitive, whitespace trimmed/normalised):
+  1. **Full name match**: `firstName + " " + lastName` (from the sheet) equals
+     the name extracted from the mail
+  2. **Initial+surname match**: the first letter of the first word in the mail
+     name equals the first letter of the first name (sheet), AND the last word in
+     the mail name equals the surname (sheet) — covers humorously deviating
+     PayPal account names (e.g. "Felix Müller" → "Fuck Müller")
+  - Assumption: PayPal names always consist of at least two words; a double first
+    name is expected to appear as one concatenated word in the PayPal name, so it
+    is automatically covered by rule 2. Other special cases (e.g. compound
+    surnames such as "von Müller") are not handled separately for now.
+- The amount is read automatically (see section 3) but does **not** feed into the
+  automatic matching – checking the amount is done manually by a human. If the
+  amount cannot be read unambiguously, it is not taken over (no guessed/best
+  effort value)
+- On ambiguity: the entry is marked "unclear" instead of being assigned
+  automatically, with the reason in the field `unclearReason`:
+  - `unclearReason: name` — no match, several matches, or the name from the mail
+    is not parseable (so name matching is not unambiguously possible)
+  - `unclearReason: amount` — name matching unambiguous, but the amount not
+    unambiguously readable
+  - If both cases apply simultaneously, `unclearReason: name` takes precedence
+    (it blocks the actual assignment); an amount that is nevertheless readable is
+    still stored
+- Status manually overridable (e.g. correction by a helper) — lives only in the
+  memory of the running process, no persistence (see trade-off below)
+- Processes raw data from section 3 (mail), and therefore necessarily runs where
+  that data is available: server-side
+- The Payment↔TicketEntry relationship is **1:n without aggregation** – one
+  TicketEntry can have several assigned Payments (e.g. double/partial payment);
+  there is no automatic summing/threshold logic per TicketEntry; the human
+  decides based on the individual entries
+- Runs **automatically on every app start**, directly after the sheet fetch
+  (section 2) and the mail query (section 3) – no manual trigger, consistent with
+  the pattern of the two preceding services
+- Matching candidates: all TicketEntries of the currently loaded event, no
+  `event_id` filtering (fitting the current "one event only" scope, see
+  section 3)
 
-**Hinweis / Trade-off**
-- Mail-Daten und Zahlungsstatus werden bei jedem App-Start neu aus den Mails aufgebaut (keine Persistenz, siehe Abschnitt 3) – eine manuelle Korrektur ("unclear" → "paid") überlebt daher keinen Neustart des Servers. Akzeptiert für den MVP, da bisher nur sehr wenige Mails/Events anfallen; Persistenz kann bei Bedarf später ergänzt werden.
+**Note / trade-off**
+- Mail data and payment status are rebuilt from the mails on every app start (no
+  persistence, see section 3) – a manual correction ("unclear" → "paid")
+  therefore does not survive a restart of the server. Accepted for the MVP, since
+  only very few mails/events occur so far; persistence can be added later if
+  needed.
 
-**Offene Fragen**
-- Keine offen.
-
----
-
-## 7. Aggregations-Service
-
-**Verantwortung**
-- Generisch: nimmt ein TicketEntry-Feld als Gruppierungskriterium ("gruppiere nach Feld X", z. B. `category` oder `wantsToHelp`)
-- Output: pro Ausprägung ein Eintrag mit Anzahl + Liste der zugehörigen Teilnehmer (`firstName`/`lastName` getrennt, nicht das zusammengesetzte `name`-Feld)
-- Format: Array von Objekten `{ value, count, entries: { firstName, lastName }[] }[]`; keine Sortierung durch den Service — Verarbeitungsreihenfolge der TicketEntries. Sortierung ist Aufgabe des Frontends (das verschiedene Sortiermöglichkeiten anbietet)
-- Läuft serverseitig im Node/Express-Backend, direkt auf den TicketEntries (Abschnitt 5); Ergebnis wird über die REST-API (Abschnitt 9) ausgeliefert
-
-**Offene Fragen**
-- Keine offen.
-
----
-
-## 8. Finanz-Service
-
-**Verantwortung**
-- **Bezahlt**: Summe des Preises aller TicketEntries, deren abgeleiteter Zahlungsstatus (Abschnitt 6, `determineTicketPaymentStatus`) "paid" ist
-- **Erwartet**: Summe des Preises **aller** TicketEntries, unabhängig vom Zahlungsstatus (open/unclear/paid) — entspricht dem vollen erwarteten Umsatz, wenn alle Angemeldeten zahlen
-- Zahlungsstatus wird vom Finanz-Service selbst berechnet (nutzt intern `PaymentMatchingService.determineTicketPaymentStatus`, Abschnitt 6) — Aufrufer übergibt nur TicketEntries + Payments (Rohdaten), analog zum Aggregations-Service (Abschnitt 7)
-- Rückgabeformat: rohe Zahlen (`{ paid: number, expected: number }`), auf 2 Nachkommastellen gerundet (defensiv gegen Floating-Point-Summierung) — keine Währungs-/Text-Formatierung im Backend, das ist Aufgabe des Frontends (siehe Schnittstelle-zum-Frontend-Abschnitt)
-- Läuft serverseitig im Node/Express-Backend, Ergebnis wird über die REST-API (Abschnitt 9) ausgeliefert
-
-**Offene Fragen**
-- Keine offen.
-
----
-
-## 9. Dashboard-Daten-API
-
-**Verantwortung**
-- Node/Express-Backend stellt die aufbereiteten Dashboard-Daten (Teilnehmerübersicht, Finanzübersicht, künftig Aufgabenstatus) über eine **REST-API** bereit
-- Bei App-Start: Sheet-Daten werden neu abgerufen und Mail-Abfrage ausgeführt (siehe Abschnitte 2 + 3); Aggregation (Abschnitt 7) und Finanzkennzahlen (Abschnitt 8) werden auf dieser Basis berechnet und über die API ausgeliefert
-- Feste Reihenfolge der Widgets wird vom Angular-Frontend festgelegt (siehe Frontend-Spec):
-  - Oben links: Teilnehmerübersicht
-  - Oben rechts: Finanzübersicht
-  - Darunter: weitere Widgets (Aufgabenstatus etc., später)
-
-**Endpunkte**
-- `GET /dashboard/participants?groupBy=<category|wantsToHelp>` — liefert die Teilnehmerübersicht als Aggregation (Abschnitt 7) über das per Query-Parameter gewählte Feld. `groupBy` ist eine Pflichtangabe, gegen eine feste Whitelist (`category`, `wantsToHelp`) geprüft; ein fehlender oder ungültiger Wert liefert `400 Bad Request`.
-- `GET /dashboard/finance` — liefert die Finanzübersicht (`{ paid, expected }`, Abschnitt 8) ohne Parameter.
-- Je Widget ein eigener Endpunkt (statt einem aggregierten `/dashboard`), damit das Frontend Widgets unabhängig laden kann; bei künftigen weiteren Widgets (Aufgabenstatus etc.) wird nach demselben Muster ein weiterer Endpunkt ergänzt.
-
-**Datenhaltung / Bootstrap**
-- Sheet-Abruf, Mail-Abfrage und Payment-Matching laufen einmalig in einem Bootstrap-Schritt vor dem Start des HTTP-Servers (`app.listen`); Ergebnis (TicketEntries + Payments) lebt danach nur im Arbeitsspeicher des Prozesses (siehe Abschnitt 2/3) und wird von beiden Endpunkten gelesen — kein Re-Fetch pro Request
-- Schlägt der Bootstrap fehl (Sheet oder Mail nicht erreichbar, siehe Fehlerverhalten Abschnitt 2/3), startet der Server nicht (Prozessabbruch) — es gibt nie einen erreichbaren Server ohne Datenstand
-- `event_id`: da der Event-Service zurückgestellt ist (Abschnitt 1), wird im Bootstrap ein fester Platzhalter-Wert verwendet
-
-**Technische Umsetzung**
-- Framework: **Express**, CORS via `cors`-Middleware ohne Origin-Einschränkung (passt zum Kernteam-only-/Kein-Zugriffsschutz-Scope, ADR-003)
-- Serverport über Environment-Variable `PORT` konfigurierbar, mit Default-Fallback
-- Tests der Endpunkte über **`supertest`** gegen die Express-App (ohne echten Server/Port)
-
-**Offene Fragen**
-- Keine offen.
+**Open questions**
+- None open.
 
 ---
 
-## Schnittstelle zum Frontend
+## 7. Aggregation service
 
-Das Dashboard-Frontend ist eine eigenständige Angular-Anwendung (client-seitig gerendert, kein SSR, siehe [ADR-004](../adr/ADR-004-backend-stack-dashboard.md)). Sie bezieht die aufbereiteten Daten über die REST-API (Abschnitt 9) vom Node/Express-Backend. Business-Logik (Aggregation, Finanzberechnung, Google-Sheet-/Mail-Integration) bleibt vollständig serverseitig; das Frontend übernimmt reine Darstellung/Interaktion.
+**Responsibility**
+- Generic: takes a TicketEntry field as the grouping criterion ("group by field
+  X", e.g. `category` or `wantsToHelp`)
+- Output: per distinct value one entry with a count + the list of the
+  corresponding participants (`firstName`/`lastName` separately, not the composed
+  `name` field)
+- Format: an array of objects `{ value, count, entries: { firstName, lastName }[] }[]`;
+  no sorting by the service — the processing order of the TicketEntries
+- **Neither side sorts today.** The frontend renders groups and members in the
+  order received (see the frontend spec, section 6.2), so the order follows
+  sign-up order and can shift as new sign-ups arrive. Sort controls are deferred;
+  when they arrive they belong in the frontend
+- Runs server-side in the Node/Express backend, directly on the TicketEntries
+  (section 5); the result is delivered over the REST API (section 9)
+
+**Open questions**
+- None open.
 
 ---
 
-## Design Thinking & Lean-Hinweise (Backend)
+## 8. Finance service
 
-- **Fake it before you build it**: Google Forms/Sheets als Ticketing-Lösung ist bereits der Lean-MVP – validiert den Bedarf, bevor eine eigene Ticket-Datenbank gebaut wird.
-- **Mail-Matching zuerst manuell testen**: Vor automatisiertem Matching (Abschnitt 6) das Verfahren an 1–2 echten Events von Hand prüfen (Wizard-of-Oz-Prinzip).
-- **Kleinster Slice zuerst**: Reine Leseintegration vor Schreiblogik/Automatisierung.
-- **Rollen bewusst später**: Kein Zugriffsschutz/Rollen im MVP (Abschnitt 1) – Rollenmodell erst einführen, wenn App für Helfer freigegeben wird (Build-Measure-Learn statt Vorab-Overengineering).
+**Responsibility**
+- **Paid**: the summed price of all TicketEntries whose derived payment status
+  (section 6, `determineTicketPaymentStatus`) is "paid"
+- **Expected**: the summed price of **all** TicketEntries, regardless of payment
+  status (open/unclear/paid) — corresponds to the full expected revenue if
+  everyone who signed up pays
+- The payment status is calculated by the finance service itself (internally
+  using `PaymentMatchingService.determineTicketPaymentStatus`, section 6) — the
+  caller passes only TicketEntries + Payments (raw data), analogous to the
+  aggregation service (section 7)
+- Return format: raw numbers (`{ paid: number, expected: number }`), rounded to 2
+  decimal places (defensively against floating point summation) — no
+  currency/text formatting in the backend, that is the frontend's job (see the
+  "Interface to the frontend" section)
+- Runs server-side in the Node/Express backend; the result is delivered over the
+  REST API (section 9)
+
+**Open questions**
+- None open.
+
+---
+
+## 9. Dashboard data API
+
+**Responsibility**
+- The Node/Express backend provides the prepared dashboard data (participant
+  overview, finance overview, later task status) over a **REST API**
+- At app start: sheet data is re-fetched and the mail query is executed (see
+  sections 2 + 3); aggregation (section 7) and finance figures (section 8) are
+  calculated on that basis and delivered over the API
+- The fixed order of the widgets is determined by the Angular frontend (see the
+  frontend spec):
+  - Top left: participant overview
+  - Top right: finance overview
+  - Below: further widgets (task status etc., later)
+
+**Endpoints**
+- `GET /dashboard/participants?groupBy=<category|wantsToHelp>` — delivers the
+  participant overview as an aggregation (section 7) over the field chosen via
+  query parameter. `groupBy` is mandatory and checked against a fixed whitelist
+  (`category`, `wantsToHelp`); a missing or invalid value returns
+  `400 Bad Request`.
+- `GET /dashboard/finance` — delivers the finance overview
+  (`{ paid, expected }`, section 8) without parameters.
+- One endpoint per widget (instead of a single aggregated `/dashboard`), so the
+  frontend can load widgets independently; for further widgets in the future
+  (task status etc.), another endpoint is added following the same pattern.
+
+**Data storage / bootstrap**
+- The sheet fetch, mail query, and payment matching run once in a bootstrap step
+  before the HTTP server starts (`app.listen`); the result (TicketEntries +
+  Payments) afterwards lives only in the process's memory (see sections 2/3) and
+  is read by both endpoints — no re-fetch per request
+- If the bootstrap fails (sheet or mail unreachable, see error behaviour in
+  sections 2/3), the server does not start (process abort) — there is never a
+  reachable server without a data state
+- `event_id`: since the event service is deferred (section 1), a fixed
+  placeholder value is used in the bootstrap
+
+**Technical implementation**
+- Framework: **Express**, CORS via the `cors` middleware without origin
+  restriction (fits the core-team-only/no-access-control scope, ADR-003)
+- Server port configurable via the environment variable `PORT`, with a default
+  fallback
+- Endpoint tests via **`supertest`** against the Express app (without a real
+  server/port)
+
+**Open questions**
+- None open.
+
+---
+
+## Interface to the frontend
+
+The dashboard frontend is a standalone Angular application (client-side rendered,
+no SSR, see [ADR-004](../adr/ADR-004-backend-stack-dashboard.md)). It obtains the
+prepared data over the REST API (section 9) from the Node/Express backend.
+Business logic (aggregation, finance calculation, Google Sheet/mail integration)
+stays entirely server-side; the frontend handles pure presentation/interaction.
+
+---
+
+## Design thinking & lean notes (backend)
+
+- **Fake it before you build it**: Google Forms/Sheets as the ticketing solution
+  is already the lean MVP – it validates the need before a dedicated ticket
+  database is built.
+- **Test mail matching manually first**: before automated matching (section 6),
+  check the procedure by hand on 1–2 real events (Wizard of Oz principle).
+- **Smallest slice first**: pure read integration before write logic/automation.
+- **Roles deliberately later**: no access control/roles in the MVP (section 1) –
+  introduce the role model only when the app is released to helpers
+  (build-measure-learn instead of upfront overengineering).

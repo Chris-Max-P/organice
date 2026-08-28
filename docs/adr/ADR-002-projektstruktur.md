@@ -1,16 +1,21 @@
-# ADR-002: Projektstruktur für Dokumentation & KI-gestützte Entwicklung
+# ADR-002: Project structure for documentation & AI-assisted development
 
 ## Status
-Angenommen
+Accepted
 
-## Kontext
-Es fallen laufend Artefakte wie Specs und ADRs an. Die Entwicklung erfolgt KI-gestützt mit Claude.
+## Context
+Artefacts such as specs and ADRs accumulate continuously. Development is
+AI-assisted using Claude.
 
-## Entscheidung
-- Eigener Ordner `/docs` für Anhänge wie Specs und ADRs, getrennt vom Anwendungscode
-- KI-gestützte Entwicklung mit Claude Code: Projektkontext wird über eine `CLAUDE.md` im Root bereitgestellt (Architektur-Überblick, Verweis auf `/docs/adr` und `/docs/specs`, Coding-Konventionen), sodass Claude bei jeder Session automatisch den relevanten Kontext lädt
+## Decision
+- A dedicated `/docs` folder for attachments such as specs and ADRs, separate
+  from the application code
+- AI-assisted development with Claude Code: project context is provided through a
+  `CLAUDE.md` in the root (architecture overview, references to `/docs/adr` and
+  `/docs/specs`, coding conventions), so that Claude automatically loads the
+  relevant context in every session
 
-## Ordnerstruktur
+## Folder structure
 
 ```
 /
@@ -22,15 +27,21 @@ Es fallen laufend Artefakte wie Specs und ADRs an. Die Entwicklung erfolgt KI-ge
 │   └── specs/
 ├── src/
 │   └── app/
-│       ├── core/          # Singleton-Services, Guards, Interceptors
-│       ├── shared/        # Wiederverwendbare Components, Pipes, Directives
-│       ├── features/      # Feature-Module (z. B. events, tickets, auth)
-│       └── layout/        # Shell-Components (Header, Nav, Footer)
-├── public/                # Statische Assets (Manifest, Icons, robots.txt) — unverändert ins Build-Output kopiert
+│       ├── core/          # Singleton services, guards, interceptors
+│       ├── shared/        # Reusable components, pipes, directives
+│       ├── features/      # Feature modules (e.g. events, tickets, auth)
+│       └── layout/        # Shell components (header, nav, footer)
+├── public/                # Static assets (manifest, icons, robots.txt) — copied unchanged into the build output
 └── ...
 ```
 
-## Begründung
-- `/docs` im Repo hält Dokumentation versioniert, zentral und für Claude als Kontext direkt zugreifbar
-- `CLAUDE.md` gibt Claude Code bei jeder Session automatisch den relevanten Projektkontext
-- Angular-Struktur trennt Core/Shared/Features nach gängigem Standard — skaliert gut mit wachsender Feature-Zahl
+This `src/app` structure applies to the **end-user PWA**. The admin dashboard is
+a separate application ([ADR-003](./ADR-003-admin-dashboard-trennung.md)) and
+uses a leaner structure fitted to its size — see the frontend spec.
+
+## Rationale
+- `/docs` in the repository keeps documentation versioned, central, and directly
+  accessible to Claude as context
+- `CLAUDE.md` gives Claude Code the relevant project context in every session
+- The Angular structure separates core/shared/features along common standards —
+  it scales well as the number of features grows

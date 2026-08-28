@@ -1,92 +1,125 @@
-# Projektbeschreibung: App für Event- und Aufgabenorganisation
+# Project description: App for event and task organisation
 
-*Stand: 13. August 2026 — Grundlagendokument für weitere Prompts (Spezifikation, Produkt-Design, Architektur)*
+*As of: 13 August 2026 — foundational document for further prompts
+(specification, product design, architecture)*
 
-## 1. Hintergrund
+## 1. Background
 
-Die vorangegangene Tool-Recherche in diesem Projekt zeigte: Es gibt kein bestehendes Tool, das Governance, Aufgabenorganisation, Finanzen, Gäste-/Fahrtplanung und Kommunikation für selbstorganisierte Gruppen in einem abdeckt. Statt bestehende Bausteine zu kombinieren (Nextcloud, Loomio, Engelsystem, Open Collective …), soll nun eine eigene App entwickelt werden — zunächst mit reduziertem, klar abgegrenztem Funktionsumfang.
+The preceding tool research in this project showed: there is no existing tool
+that covers governance, task organisation, finances, guest/travel planning, and
+communication for self-organised groups in one place. Instead of combining
+existing building blocks (Nextcloud, Loomio, Engelsystem, Open Collective …), a
+dedicated app is now to be developed — initially with a reduced, clearly
+delimited feature set.
 
-## 2. Projektabgrenzung
+## 2. Project scope
 
-### 2.1 In diesem Schritt enthalten
+### 2.1 Included in this step
 
-- **Event-Übersicht** — Events als gemeinsame Projekte anlegen, Dashboard mit Kennzahlen
-- **Aufgaben** — Aufgabenverwaltung mit Rollen-Sichtbarkeit, Übernahme-Funktion, Kategorisierung
+- **Event overview** — create events as shared projects, dashboard with key
+  figures
+- **Tasks** — task management with role-based visibility, a take-over function,
+  and categorisation
 
-### 2.2 Bewusst ausgeklammert (spätere Ausbaustufen)
+### 2.2 Deliberately excluded (later stages)
 
-Aus der Recherche als relevant identifiziert, aber nicht Teil dieses Zuschnitts: Entscheidungsfindung/Konsent-Prozesse, Finanz-Detailverwaltung (Buchungen, Belege), Gäste-/Fahrtplanung, Wiki/Dokumentenablage, Kommunikationsfunktionen (Chat, Foren).
+Identified as relevant by the research, but not part of this cut: decision
+making/consent processes, detailed finance management (bookings, receipts),
+guest/travel planning, wiki/document storage, communication features (chat,
+forums).
 
-## 3. Zielgruppe & Rollen (Annahme, zu bestätigen)
+## 3. Target group & roles (assumption, to be confirmed)
 
-- **Organisator:in** — legt Events an, verwaltet Aufgabenkreise, sieht alles
-- **Kreis-/Bereichsverantwortliche:r** — verantwortet einen Aufgabenkreis, verteilt Aufgaben innerhalb des Kreises
-- **Helfer:in / Teilnehmer:in** — sieht Aufgaben gemäß Sichtbarkeit, übernimmt Aufgaben
+- **Organiser** — creates events, manages task circles, sees everything
+- **Circle/area lead** — is responsible for a task circle, distributes tasks
+  within the circle
+- **Helper / participant** — sees tasks according to visibility, takes on tasks
 
-Rollenmodell und Rechte sind in einem Folge-Prompt genauer zu spezifizieren.
+The role model and permissions are to be specified in more detail in a follow-up
+prompt.
 
-## 4. Funktionsübersicht
+## 4. Feature overview
 
-### 4.1 Event-Übersicht
+### 4.1 Event overview
 
-**Hinweis zur Architektur**: Die Event-Übersicht/Dashboard richtet sich an Administrator:innen/Kernteam und wird ausschließlich lokal genutzt (kein Endnutzer-Zugriff) — siehe [ADR-003](./adr/ADR-003-admin-dashboard-trennung.md). Sie ist getrennt von der Endnutzer-PWA (Abschnitt 4.2, [ADR-001](./adr/ADR-001-frontend-stack.md)) zu betrachten.
+**Architecture note**: the event overview/dashboard is aimed at
+administrators/the core team and is used exclusively locally (no end-user
+access) — see [ADR-003](./adr/ADR-003-admin-dashboard-trennung.md). It is to be
+considered separately from the end-user PWA (section 4.2,
+[ADR-001](./adr/ADR-001-frontend-stack.md)).
 
-**Event erstellen**
-- Ein Event wird als gemeinsames Projekt angelegt (mehrere Personen wirken daran mit, keine reine Einzel-Verwaltung)
+**Create an event**
+- An event is created as a shared project (several people contribute to it, it is
+  not purely single-person administration)
 
 **Dashboard**
-- Teilnehmerzahlen (Ist-Stand, evtl. im Verhältnis zu einer Zielgröße)
-- Finanzstand (Kennzahl-Ebene — Details bewusst außerhalb des Scopes, siehe 2.2)
-- Status der Aufgaben (z. B. Anteil erledigt/offen/in Arbeit, evtl. nach Kreis oder Kategorie)
+- Participant numbers (actual figure, possibly in relation to a target)
+- Finance state (at the level of key figures — details deliberately out of scope,
+  see 2.2)
+- Task status (e.g. share done/open/in progress, possibly by circle or category)
 
-### 4.2 Aufgaben
+### 4.2 Tasks
 
-**Aufgabenübersicht und Verantwortlichkeiten**
+**Task overview and responsibilities**
 
-Aufgabenliste, je Aufgabe mit:
-- Beschreibung
-- Umfang (Aufwand/Größe)
-- Zeitpunkt
-- Helfer vorhanden / Helfer gebraucht (Soll-Ist)
-- Fortschritt / aktueller Stand (ggf. in %)
-- Status (offen → verteilt → voll, sobald Helferbedarf gedeckt)
+Task list, per task with:
+- Description
+- Scope (effort/size)
+- Point in time
+- Helpers available / helpers needed (target vs actual)
+- Progress / current state (possibly as a percentage)
+- Status (open → distributed → full, once the helper demand is covered)
 
-**Aufgabenkreise**
-- Gruppierung von Aufgaben in Kreise
-- Sichtbarkeit pro Rolle konfigurierbar, um Informations-Overload zu vermeiden
+**Task circles**
+- Grouping of tasks into circles
+- Visibility configurable per role, to avoid information overload
 
-**Offene Aufgaben**
-- Liste offener Aufgaben mit Kurzbeschreibung, aktuell Verantwortlichem, Funktion „Aufgabe übernehmen"
-- Idee: Aufgaben verlosen (Mechanismus zur Zuteilung statt/ergänzend zu freiwilliger Übernahme) — Status: zu klären, ob und wie
+**Open tasks**
+- List of open tasks with a short description, the currently responsible person,
+  and a "take on task" function
+- Idea: raffle tasks (a mechanism for allocation instead of/in addition to
+  voluntary take-over) — status: to be clarified whether and how
 
-**Aufgaben-Kategorien**
-- Vierstufig: muss / soll / kann / darf (Moscow-artige Priorisierung)
+**Task categories**
+- Four levels: must / should / could / may (MoSCoW-style prioritisation)
 
-*Hinweis: Der letzte Punkt der Ursprungsliste war im Input leer — ggf. in einem Folge-Prompt ergänzen.*
+*Note: the last item of the original list was empty in the input — to be added in
+a follow-up prompt if needed.*
 
-## 5. Qualitätsziele für die weitere Planung
+## 5. Quality goals for further planning
 
-Da hohe Software-Qualität explizit Ziel ist, sollten Folge-Prompts u. a. adressieren:
-- Klare, testbare fachliche Spezifikation je Feature (Akzeptanzkriterien)
-- Datenmodell (Event, Aufgabe, Aufgabenkreis, Rolle, Nutzer:in, Sichtbarkeitsregeln)
-- Rechte-/Rollenkonzept inkl. Sichtbarkeitslogik der Aufgabenkreise
-- Architekturentscheidung (Frontend/Backend-Aufteilung, Hosting/Self-Hosting, Datenhaltung)
-- Erweiterbarkeit im Blick auf die ausgeklammerten Bereiche (Finanzen, Gäste, Governance) — Datenmodell sollte spätere Integration nicht verbauen
-- Nicht-funktionale Anforderungen: Mehrbenutzerfähigkeit/Gleichzeitigkeit, Mobilfreundlichkeit, Datenschutz (Teilnehmerdaten), Barrierefreiheit
+Since high software quality is an explicit goal, follow-up prompts should address
+among other things:
+- A clear, testable functional specification per feature (acceptance criteria)
+- The data model (event, task, task circle, role, user, visibility rules)
+- A permission/role concept including the visibility logic of task circles
+- Architecture decisions (frontend/backend split, hosting/self-hosting, data
+  storage)
+- Extensibility with a view to the excluded areas (finances, guests, governance)
+  — the data model should not block later integration
+- Non-functional requirements: multi-user capability/concurrency, mobile
+  friendliness, data protection (participant data), accessibility
 
-## 6. Offene Fragen für die weitere Planung
+## 6. Open questions for further planning
 
-1. Zielplattform: Web-App, native App, oder beides?
-2. Hosting: self-hosted (passend zur bisherigen Präferenz für Open-Source-Bausteine) oder verwalteter Dienst?
-3. Wie viele Events parallel / wie viele Teilnehmer:innen pro Event als Auslegungsgröße?
-4. Wie wird der „Finanzstand" im Dashboard berechnet, wenn Finanz-Detailverwaltung nicht Teil des Scopes ist — manuelle Eingabe einer Kennzahl oder spätere Schnittstelle?
-5. Verlosungsmechanismus für Aufgaben: gewünscht oder nur Idee?
-6. Genauer Zuschnitt von Rollen/Rechten über die drei angenommenen Rollen hinaus?
+1. Target platform: web app, native app, or both?
+2. Hosting: self-hosted (in line with the previous preference for open-source
+   building blocks) or a managed service?
+3. How many events in parallel / how many participants per event as a sizing
+   assumption?
+4. How is the "finance state" on the dashboard calculated when detailed finance
+   management is not part of the scope — manual entry of a key figure or a later
+   interface?
+5. Raffle mechanism for tasks: wanted, or just an idea?
+6. The precise cut of roles/permissions beyond the three assumed roles?
 
-## 7. Weiteres Vorgehen
+## 7. Next steps
 
-Dieses Dokument dient als Grundlage für Folge-Prompts zu:
-- **Fachliche Spezifikation** (Datenmodell, User Stories, Akzeptanzkriterien je Feature)
-- **Produkt-Design** (Screens/Flows für Dashboard, Aufgabenliste, Aufgabe-übernehmen-Flow)
-- **System-Architektur** (Tech-Stack, Datenhaltung, Rollen-/Rechtekonzept, Hosting)
-- **Weitere Planung** (Roadmap für ausgeklammerte Bereiche, Test-/Qualitätsstrategie)
+This document serves as the basis for follow-up prompts on:
+- **Functional specification** (data model, user stories, acceptance criteria per
+  feature)
+- **Product design** (screens/flows for the dashboard, task list, take-on-task
+  flow)
+- **System architecture** (tech stack, data storage, role/permission concept,
+  hosting)
+- **Further planning** (roadmap for the excluded areas, test/quality strategy)
