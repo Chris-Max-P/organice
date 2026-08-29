@@ -63,3 +63,9 @@ JSON over REST, never pre-rendered HTML pages.
 - The dashboard backend therefore needs no database or persistence layer for now
 - No manual "fetch mails" button is needed, since mails are re-fetched on every
   app start anyway
+- **Currently deviated from**: the dashboard frontend is temporarily built as
+  plain HTML/CSS/JavaScript rather than Angular, because Angular 22 requires Node
+  `^22.22.3 || ^24.15.0 || >=26` and the development machine runs Node v21.5.0.
+  The frontend/backend split, the REST contract, and the secrets boundary are
+  unaffected — only the rendering technology. See the frontend spec, "Interim
+  deviation from ADR-004", for the migration back
