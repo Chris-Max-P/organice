@@ -116,6 +116,8 @@ backend types in `backend/src/services/aggregation/aggregation.types.ts` and
 
 ## 5. Layout
 
+Page title: "Organice Dashboard", used as both `<title>` and the page heading.
+
 Fixed widget order:
 
 - Top left: participant overview
@@ -152,11 +154,22 @@ Widgets build their own content nodes and hand them over. They never implement
 state handling themselves, so a new widget gets correct loading, error, and empty
 behaviour for free.
 
+The card header also has a **controls slot**, filled via `setControls(node)`.
+Controls live outside the body, so they survive every state change — the
+participant grouping switch stays usable after an error, which it would not if it
+were part of the content node.
+
 ### 6.2 Participant overview
 
-- **Grouping switch**: two buttons acting as a segmented control, `category` and
-  `wantsToHelp`, defaulting to `category`. Clicking re-requests the endpoint.
-- **Total**: the summed count across all groups, shown above the list.
+Card title: "Teilnehmerübersicht".
+
+- **Grouping switch**: two buttons acting as a segmented control, `category`
+  (labelled "Kategorie") and `wantsToHelp` (labelled "Helfer"), defaulting to
+  `category`. Clicking re-requests the endpoint. Responses that arrive after the
+  grouping has changed again are discarded, so a slow request cannot overwrite a
+  newer one; the buttons stay enabled throughout.
+- **Total**: the summed count across all groups, shown above the list as
+  "Gesamt: 42".
 - **Group rows**: one `<details>` element per group. The `<summary>` shows the
   group value and its count; the member list (`firstName lastName`) sits inside
   and appears when expanded. The native element supplies the toggle behaviour and
@@ -182,6 +195,8 @@ without a framework there is no automatic escaping.
 
 ### 6.3 Finance overview
 
+Card title: "Finanzübersicht".
+
 - Shows exactly two figures: **Bezahlt** (`paid`) and **Erwartet** (`expected`).
 - No outstanding amount, no progress bar, no percentage.
 - Formatted as EUR in `de-DE` (`1.234,50 €`) via
@@ -196,13 +211,20 @@ without a framework there is no automatic escaping.
 Both widgets load independently from their own endpoint, so each renders its own
 state.
 
-- **Loading**: a skeleton or spinner inside the widget body.
+- **Loading**: the text "Wird geladen …" inside the widget body. No spinner and
+  no skeleton — a skeleton would have to be shaped per widget, which would move
+  the loading state out of `widget-card.js` and into every widget.
 - **Error** (network failure or non-2xx): an explicit error message inside the
   widget — "Daten konnten nicht geladen werden". Never a silent blank; this
   mirrors the backend's fail-loudly stance (backend spec, sections 2, 3, 9).
   **No automatic retry** and no retry button, consistent with section 8.
 - **Empty** (2xx with no data): a distinct, neutral message — "Noch keine
   Anmeldungen" — clearly different from the error state.
+
+Only the participant overview can be empty, when the endpoint returns no groups.
+The finance endpoint always returns two numbers, so `0,00 €` for both is valid
+data rather than emptiness; the finance widget renders its two figures and never
+calls `showEmpty()`.
 
 The error state is not an edge case. The backend exits on bootstrap failure
 (backend spec, section 9), so whenever it fails to start, the frontend still
