@@ -1,0 +1,67 @@
+/* Participant overview — see docs/specs/spec-frontend.md, section 6.2 */
+
+.participants__total {
+  margin: 0 0 var(--spacing);
+  color: var(--color-text-muted);
+}
+
+.participants__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.participants__group {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.participants__group-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+/* display: flex drops the native disclosure marker, so it is drawn by hand. */
+.participants__group-summary::-webkit-details-marker {
+  display: none;
+}
+
+.participants__group-summary::before {
+  content: "";
+  flex: none;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--color-text-muted);
+  transition: transform 120ms ease;
+}
+
+.participants__group[open] > .participants__group-summary::before {
+  transform: rotate(90deg);
+}
+
+.participants__group-value {
+  flex: 1;
+}
+
+.participants__group-count {
+  flex: none;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.participants__members {
+  margin: 0;
+  padding: 0 12px 12px 32px;
+}
+
+.participants__members:empty::after {
+  content: "Keine Einträge";
+  color: var(--color-text-muted);
+}

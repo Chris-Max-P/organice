@@ -36,8 +36,10 @@ AI-assisted using Claude.
 ```
 
 This `src/app` structure applies to the **end-user PWA**. The admin dashboard is
-a separate application ([ADR-003](./ADR-003-admin-dashboard-trennung.md)) and
-uses a leaner structure fitted to its size — see the frontend spec.
+a separate application ([ADR-003](./ADR-003-admin-dashboard-trennung.md)) but
+uses the same `core/ shared/ features/` split, in both its frontend and its
+backend — see the frontend spec, section 3, and the backend spec, "Code
+structure".
 
 ## Rationale
 - `/docs` in the repository keeps documentation versioned, central, and directly

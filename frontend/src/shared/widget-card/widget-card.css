@@ -1,0 +1,35 @@
+/* Widget card — see docs/specs/spec-frontend.md, section 6.1 */
+
+.widget-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--spacing);
+}
+
+.widget-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: var(--spacing);
+}
+
+.widget-card__title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.widget-card__controls:empty {
+  display: none;
+}
+
+.widget-card__state {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.widget-card__state--error {
+  color: var(--color-error);
+}

@@ -1,0 +1,19 @@
+/* Finance overview — see docs/specs/spec-frontend.md, section 6.3 */
+
+.finance__figures {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px var(--spacing);
+  margin: 0;
+}
+
+.finance__label {
+  color: var(--color-text-muted);
+}
+
+.finance__amount {
+  margin: 0;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
