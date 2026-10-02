@@ -1,31 +1,49 @@
-# ADR-003: Trennung Endnutzer-PWA und Admin-Dashboard
+# ADR-003: Separation of end-user PWA and admin dashboard
 
 ## Status
-Angenommen
+Accepted
 
-## Kontext
-Die App hat zwei unterschiedliche Nutzergruppen mit unterschiedlichen Anforderungen:
-- **Endnutzer:innen** (Teilnehmer:innen, Helfer:innen) — nutzen die App auf verschiedenen Geräten, verteilt, siehe [ADR-001](./ADR-001-frontend-stack.md).
-- **Administrator:innen/Kernteam** — nutzen das Event-Dashboard (Teilnehmerübersicht, Finanzstand, Google-Sheet- und Mail-Integration) ausschließlich lokal. Laut Backend-Spec ist das Dashboard ohnehin "Kernteam-only", vorerst ohne Rollen/Zugriffsschutz.
+## Context
+The app has two distinct user groups with different requirements:
+- **End users** (participants, helpers) — use the app on various devices,
+  distributed, see [ADR-001](./ADR-001-frontend-stack.md).
+- **Administrators/core team** — use the event dashboard (participant overview,
+  finance figures, Google Sheet and mail integration) exclusively locally.
+  According to the backend spec, the dashboard is core-team-only anyway, without
+  roles or access control for now.
 
-ADR-001 legt für die Endnutzer-App eine PWA fest (Offline-Fähigkeit, Manifest, Service Worker, potenziell App-Store-Distribution via Capacitor). Diese Eigenschaften sind für ein lokal vom Administrator genutztes Dashboard nicht erforderlich.
+ADR-001 specifies a PWA for the end-user app (offline capability, manifest,
+service worker, potentially app store distribution via Capacitor). None of these
+properties are required for a dashboard used locally by an administrator.
 
-## Entscheidung
-Das Admin-Dashboard wird als **eigenständiges, backend-artiges Tool** umgesetzt — getrennt von der Endnutzer-PWA:
-- Läuft lokal beim Administrator/Kernteam, keine Distribution an Endnutzer:innen
-- Kein PWA-Zwang (kein Manifest, Service Worker, Offline-Anforderung)
-- Besteht aus einem Node/Express-Backend (Aggregation, Finanzkennzahlen, Google-Sheet-/Mail-Integration) und einem separaten Angular-Frontend, das die Daten per REST bezieht — kein SSR, siehe [ADR-004](./ADR-004-backend-stack-dashboard.md)
+## Decision
+The admin dashboard is built as a **standalone, backend-style tool** — separate
+from the end-user PWA:
+- Runs locally for the administrator/core team, not distributed to end users
+- No PWA obligation (no manifest, service worker, or offline requirement)
+- Consists of a Node/Express backend (aggregation, finance figures, Google
+  Sheet/mail integration) and a separate Angular frontend that fetches the data
+  over REST — no SSR, see [ADR-004](./ADR-004-backend-stack-dashboard.md)
 
-ADR-001 (Angular PWA) gilt ausschließlich für die Endnutzer-App.
+ADR-001 (Angular PWA) applies exclusively to the end-user app.
 
-## Begründung
-- Vermeidet unnötige PWA-Komplexität für ein Tool, das nur lokal von einer Person/einem kleinen Team genutzt wird
-- Passt zum "Kernteam-only"-Scope der Backend-Spec — kein Zugriffsschutz nötig, da kein Fremdzugriff über verteilte Geräte
-- Entkoppelt Release-Zyklen: Dashboard-Änderungen erfordern keinen Rollout an Endnutzer-Geräte
+## Rationale
+- Avoids unnecessary PWA complexity for a tool used locally by one person or a
+  small team
+- Fits the core-team-only scope of the backend spec — no access control needed,
+  since there is no external access from distributed devices
+- Decouples release cycles: dashboard changes require no rollout to end-user
+  devices
 
-## Verworfene Alternativen
-- **Dashboard als Admin-Route innerhalb derselben PWA** — verworfen: vermischt Endnutzer- und Admin-Oberfläche, würde Zugriffsschutz erfordern, den es beim rein lokalen Betrieb aktuell nicht braucht
+## Rejected alternatives
+- **Dashboard as an admin route within the same PWA** — rejected: mixes end-user
+  and admin interfaces, and would require access control that purely local
+  operation does not currently need
 
-## Konsequenzen
-- Zwei getrennte Anwendungsteile im Repo (Endnutzer-PWA, Admin-Dashboard) — Projektstruktur ([ADR-002](./ADR-002-projektstruktur.md)) ist bei konkreter Ordnertrennung entsprechend zu erweitern
-- Konkrete Framework-Wahl für das Dashboard-Backend siehe [ADR-004](./ADR-004-backend-stack-dashboard.md)
+## Consequences
+- Two separate application parts in the repository (end-user PWA, admin
+  dashboard) — the project structure
+  ([ADR-002](./ADR-002-projektstruktur.md)) is to be extended accordingly once
+  folders are actually split
+- For the concrete framework choice for the dashboard backend, see
+  [ADR-004](./ADR-004-backend-stack-dashboard.md)

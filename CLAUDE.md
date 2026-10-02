@@ -1,21 +1,32 @@
 # CLAUDE.md
 
-Kontext für Claude Code. Details siehe jeweilige ADR in `/docs`.
+Context for Claude Code. For details see the respective ADR in `/docs`.
 
-## Vorgehen beim Implementieren
-In jedem Modul das wir implementieren, gehen wir wie folgt vor. Du führst mich durch die einzelnen Schritte, wenn ich dir sage, dass wir ein Modul implementieren.
-1. sag mir: welche Fragen sind noch offen, um das Modul implementieren zu können. Gib mir die ganze Liste an Fragen aus und führe mich danach einzeln durch die Fragen. Gib mir bei jeder Entscheidung relevante Hintergrundinfos über die Möglichkeiten. Passe die Specs entsprechend der Antworten an.
-2. erstelle Ordnerstruktur und files mit leeren Methoden
-3. schreibe Tests (test-driven development)
-4. starte Implementierung
-5. prüfe ob Tests laufen
-6. git: erstelle einen neuen branch, commite die Änderungen und push
+## Implementation process
+For every module we implement, we follow these steps. Guide me through them one
+by one when I tell you we are implementing a module.
+1. Tell me which questions are still open before the module can be implemented.
+   List all questions first, then walk me through them one at a time. For every
+   decision, give me relevant background on the options. Update the specs
+   according to my answers.
+2. Create the folder structure and files with empty methods.
+3. Write tests (test-driven development).
+4. Start the implementation.
+5. Verify that the tests pass.
+6. Git: create a new branch, commit the changes and push.
 
-## ADR-Übersicht
+## UI language
+All user-facing strings in the admin dashboard are **German**, hardcoded, with no
+i18n framework. The dashboard is used exclusively by a German-speaking core
+team, the Google Form columns are German, and the PayPal payment mails are
+German. This is a deliberate exception to the English-only rule, which applies to
+code, identifiers, comments, tests, and documentation — not to user-facing copy.
 
-| ADR | Thema | Zusammenfassung |
+## ADR overview
+
+| ADR | Topic | Summary |
 |---|---|---|
-| [ADR-001](./docs/adr/ADR-001-frontend-stack.md) | Frontend-Stack | Angular als PWA, später optional Capacitor für native Apps |
-| [ADR-002](./docs/adr/ADR-002-projektstruktur.md) | Projektstruktur & KI-Entwicklung | `/docs`-Ordner für Anhänge/ADRs, KI-gestützte Entwicklung mit Claude |
-| [ADR-003](./docs/adr/ADR-003-admin-dashboard-trennung.md) | Admin-Dashboard-Trennung | Admin-Dashboard ist eigenständiges, lokal genutztes Backend-Tool, getrennt von der Endnutzer-PWA |
-| [ADR-004](./docs/adr/ADR-004-backend-stack-dashboard.md) | Backend-Stack Admin-Dashboard | Node/Express-Backend (REST-API) + separates Angular-Frontend, kein SSR |
+| [ADR-001](./docs/adr/ADR-001-frontend-stack.md) | Frontend stack | Angular as a PWA, optionally Capacitor for native apps later |
+| [ADR-002](./docs/adr/ADR-002-projektstruktur.md) | Project structure & AI-assisted development | `/docs` folder for attachments/ADRs, AI-assisted development with Claude |
+| [ADR-003](./docs/adr/ADR-003-admin-dashboard-trennung.md) | Admin dashboard separation | The admin dashboard is a standalone, locally used backend tool, separate from the end-user PWA |
+| [ADR-004](./docs/adr/ADR-004-backend-stack-dashboard.md) | Admin dashboard backend stack | Node/Express backend (REST API) + separate Angular frontend, no SSR. Frontend is temporarily plain HTML/JS/CSS — see the frontend spec |
