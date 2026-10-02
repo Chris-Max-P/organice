@@ -1,0 +1,27 @@
+/* Segmented control — see docs/specs/spec-frontend.md, section 6.2 */
+
+.segmented-control {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.segmented-control__button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.segmented-control__button + .segmented-control__button {
+  border-left: 1px solid var(--color-border);
+}
+
+.segmented-control__button--active {
+  background: var(--color-accent);
+  color: #ffffff;
+}

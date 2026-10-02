@@ -1,14 +1,19 @@
-// Entry point — see docs/specs/spec-frontend.md, section 6
+// Entry point — see docs/specs/spec-frontend.md, sections 3, 6
 
-import { mount as mountFinance } from './finance-widget.js';
-import { mount as mountParticipants } from './participants-widget.js';
+import { mount as mountFinance } from './features/finance/finance-widget.js';
+import { mount as mountParticipants } from './features/participants/participants-widget.js';
 
-const participantsContainer = document.querySelector('#participants-widget');
-const financeContainer = document.querySelector('#finance-widget');
+/** Order on the dashboard — see docs/specs/spec-frontend.md, section 5 */
+const WIDGETS = [mountParticipants, mountFinance];
 
-if (!(participantsContainer instanceof HTMLElement) || !(financeContainer instanceof HTMLElement)) {
-  throw new Error('Widget-Container fehlen im Dokument');
+const dashboard = document.querySelector('#dashboard');
+
+if (!(dashboard instanceof HTMLElement)) {
+  throw new Error('Dashboard container is missing from the document');
 }
 
-mountParticipants(participantsContainer);
-mountFinance(financeContainer);
+for (const mount of WIDGETS) {
+  const container = document.createElement('div');
+  dashboard.append(container);
+  mount(container);
+}

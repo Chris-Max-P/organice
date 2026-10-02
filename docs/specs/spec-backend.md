@@ -24,6 +24,54 @@ This dashboard is part of the admin tool, not the end-user PWA — see
 [ADR-003](../adr/ADR-003-admin-dashboard-trennung.md). It runs locally for the
 core team only, without PWA requirements (offline, manifest, service worker).
 
+The admin tool grows by feature: the organiser side of tasks
+([docs/design/tasks.md](../design/tasks.md)) is added to this backend as a new
+feature folder. Helpers get their own app or their own view onto the same
+application; that is decided when the helper side is specified.
+
+### Code structure
+
+Organised by feature, using the same `core/ features/` vocabulary as the
+frontend (frontend spec, section 3):
+
+```
+backend/src/
+  server.ts                         # loads event data, then app.listen (section 9)
+  app.ts                            # createApp(eventData): mounts each feature router
+  core/                             # shared by all features, loaded once at startup
+    event-data/
+      event-data.types.ts           # EventData { ticketEntries, payments }
+      load-event-data.ts            # sheet + mail + mapping + matching (section 9)
+    integrations/
+      google-sheets/                # section 2
+      mail/                         # section 3
+    ticket-model/                   # section 5
+    payment-matching/               # section 6
+  features/
+    participants/                   # GET /dashboard/participants
+      participants.routes.ts
+      participants.types.ts         # GroupByField whitelist
+      aggregation.service.ts        # section 7
+    finance/                        # GET /dashboard/finance
+      finance.routes.ts
+      finance.service.ts            # section 8
+```
+
+**Dependency rules**
+
+- `features/*` may import from `core/`. A feature **never imports from another
+  feature**; something two features need moves to `core/`.
+- `core/` never imports from `features/`.
+- Something used by one feature only stays in that feature (e.g. the
+  aggregation service lives in `participants/`) until a second one needs it.
+
+**A feature owns** its Express router (`create<Feature>Router(eventData)`), its
+services, and its types. Tests sit next to the file they test (`*.test.ts`);
+route tests go through `createApp` so they cover the full URL.
+
+**Adding a feature**: create `src/features/<name>/` with a router factory, and
+mount it in `app.ts`. No shared class has to change.
+
 ---
 
 ## 1. Event service
@@ -376,17 +424,24 @@ in the repository/codebase, and especially not in the frontend bundle.
 - One endpoint per widget (instead of a single aggregated `/dashboard`), so the
   frontend can load widgets independently; for further widgets in the future
   (task status etc.), another endpoint is added following the same pattern.
+- Each endpoint is its own feature router (`features/participants/`,
+  `features/finance/`, see "Code structure"), mounted in `app.ts`. There is no
+  central dashboard service bundling them.
 
 **Data storage / bootstrap**
-- The sheet fetch, mail query, and payment matching run once in a bootstrap step
-  before the HTTP server starts (`app.listen`); the result (TicketEntries +
-  Payments) afterwards lives only in the process's memory (see sections 2/3) and
-  is read by both endpoints — no re-fetch per request
+- The sheet fetch, mail query, and payment matching run once in
+  `loadEventData()` (`core/event-data/`) before the HTTP server starts
+  (`app.listen`); the result, an `EventData` snapshot (TicketEntries +
+  Payments), afterwards lives only in the process's memory (see sections 2/3)
+  and is handed to every feature router — no re-fetch per request
 - If the bootstrap fails (sheet or mail unreachable, see error behaviour in
   sections 2/3), the server does not start (process abort) — there is never a
   reachable server without a data state
 - `event_id`: since the event service is deferred (section 1), a fixed
-  placeholder value is used in the bootstrap
+  placeholder value is used in `loadEventData()`
+- Tasks will be the first feature with data written at runtime rather than read
+  at startup, so it will need persistence that `EventData` does not provide;
+  that is specified with the feature
 
 **Technical implementation**
 - Framework: **Express**, CORS via the `cors` middleware without origin
