@@ -26,8 +26,11 @@ core team only, without PWA requirements (offline, manifest, service worker).
 
 The admin tool grows by feature: the organiser side of tasks
 ([docs/design/tasks.md](../design/tasks.md)) is added to this backend as a new
-feature folder. Helpers get their own app or their own view onto the same
-application; that is decided when the helper side is specified.
+feature folder. Helpers get their own app (the end-user PWA of
+[ADR-001](../adr/ADR-001-frontend-stack.md)), which uses this same backend —
+there is no second backend. Hosting, persistence and protecting the admin
+endpoints once helpers reach the backend from outside are still open (see the
+tasks design, "Architectural consequence").
 
 ### Code structure
 

@@ -21,9 +21,10 @@ section 3), so no manual "fetch mails" button is needed.
 This frontend is the core team's application, not a single-purpose dashboard.
 Further features land here as additional feature folders (section 3) — the next
 one is the organiser side of tasks (see
-[docs/design/tasks.md](../design/tasks.md)). Helpers will get their own app or
-at least their own view onto the same application; which of the two is decided
-when the helper side is specified, not here.
+[docs/design/tasks.md](../design/tasks.md)), reached through a menu item
+("Aufgaben") next to the dashboard. Helpers get their own app, the end-user PWA
+of [ADR-001](../adr/ADR-001-frontend-stack.md), which talks to the same backend;
+it is not part of this application.
 
 ### Interim deviation from ADR-004
 
@@ -363,8 +364,8 @@ Explicitly deferred, in rough order of expected need:
 - **Tasks feature** (organiser side, [docs/design/tasks.md](../design/tasks.md)):
   a new `features/tasks/` folder. It is the first feature that needs more than a
   widget (a full task list, creating a task), so it will also bring the first
-  page-level navigation; that shell belongs in `core/` and is specified together
-  with the feature.
+  page-level navigation: a menu with two items, "Dashboard" and "Aufgaben".
+  That shell belongs in `core/` and is specified together with the feature.
 - **Further widgets**: each with its own feature folder and endpoint, following
   the existing pattern.
 - **Mobile pass**: a genuine responsive design, starting with the participant
