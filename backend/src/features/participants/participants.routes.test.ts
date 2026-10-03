@@ -1,8 +1,11 @@
 // Integration test of the participants route via supertest — see CLAUDE.md, step 3.
 
-import { describe, it, expect } from '@jest/globals';
+import { afterAll, beforeAll, describe, it, expect } from '@jest/globals';
+import { Kysely } from 'kysely';
 import request from 'supertest';
 import { createApp } from '../../app.js';
+import { openDatabase } from '../../core/database/database.js';
+import { Database } from '../../core/database/database.types.js';
 import { TicketEntry } from '../../core/ticket-model/ticket-model.types.js';
 
 function buildTicket(overrides: Partial<TicketEntry> = {}): TicketEntry {
@@ -25,8 +28,18 @@ function buildTestApp() {
     buildTicket({ id: 2, firstName: 'Felix', lastName: 'Müller', category: '4er / 5er Zimmer', wantsToHelp: 'Ja' }),
     buildTicket({ id: 3, firstName: 'Anna', lastName: 'Schmidt', category: '7er / 8er Zimmer', wantsToHelp: 'Nein' }),
   ];
-  return createApp({ ticketEntries, payments: [] });
+  return createApp({ ticketEntries, payments: [] }, db);
 }
+
+let db: Kysely<Database>;
+
+beforeAll(async () => {
+  db = await openDatabase();
+});
+
+afterAll(async () => {
+  await db.destroy();
+});
 
 describe('GET /dashboard/participants', () => {
   it('returns the aggregation grouped by category', async () => {

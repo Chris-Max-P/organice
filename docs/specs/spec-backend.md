@@ -42,11 +42,13 @@ frontend (frontend spec, section 3):
 
 ```
 backend/src/
-  server.ts                         # loads event data, then app.listen (section 9)
-  app.ts                            # createApp(eventData): mounts each feature router
+  server.ts                         # opens the database, loads event data, then app.listen (section 9)
+  app.ts                            # createApp(eventData, db): mounts each feature router
   core/                             # shared by all features, loaded once at startup
+    database/                       # section 10
     event-data/
       event-data.types.ts           # EventData { ticketEntries, payments }
+      event-id.ts                   # EVENT_ID placeholder (section 9)
       load-event-data.ts            # sheet + mail + mapping + matching (section 9)
     integrations/
       google-sheets/                # section 2
@@ -61,6 +63,10 @@ backend/src/
     finance/                        # GET /dashboard/finance
       finance.routes.ts
       finance.service.ts            # section 8
+    tasks/                          # GET /tasks/all, POST /tasks (section 11)
+      tasks.routes.ts
+      tasks.service.ts
+      tasks.types.ts
 ```
 
 **Dependency rules**
