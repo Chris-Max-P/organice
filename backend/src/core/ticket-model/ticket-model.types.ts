@@ -11,10 +11,8 @@ export interface TicketEntry {
   lastName: string;
   name: string;
   category: string;
-  /** null if the category contains no parseable price — see `comment`. */
+  /** null if the category contains no parseable price */
   price: number | null;
   timestamp: string;
   wantsToHelp: string;
-  /** Short note on import problems of this entry, empty if there are none. */
-  comment: string;
 }

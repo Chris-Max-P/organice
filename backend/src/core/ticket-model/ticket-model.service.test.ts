@@ -44,7 +44,6 @@ describe('TicketModelService', () => {
         price: 175,
         timestamp: '23.08.2026 12:00:00',
         wantsToHelp: 'Ja',
-        comment: '',
       },
     ]);
   });
@@ -93,7 +92,7 @@ describe('TicketModelService', () => {
   });
 
   it.each(['Kategorie ohne Preis', '145', ''])(
-    'keeps the entry with price null and a comment when category "%s" contains no price',
+    'keeps the entry with price null when category "%s" contains no price',
     (category) => {
       const sheet = buildSheet([
         {
@@ -110,7 +109,6 @@ describe('TicketModelService', () => {
 
       expect(entry.category).toBe(category);
       expect(entry.price).toBeNull();
-      expect(entry.comment).toBe('Kein Preis in Kategorie');
     },
   );
 

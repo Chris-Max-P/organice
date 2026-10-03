@@ -14,8 +14,6 @@ const COLUMN_WANTS_TO_HELP = 'Mitmachen';
 // can change — a fixed price table would break again on every sheet edit.
 const PRICE_PATTERN = /(\d+)\s*€/;
 
-const COMMENT_NO_PRICE = 'Kein Preis in Kategorie';
-
 export class TicketModelService {
   mapToTicketEntries(sheet: SheetTable, event_id: string): TicketEntry[] {
     return sheet.rows.map((row, index) => {
@@ -34,7 +32,6 @@ export class TicketModelService {
         price: priceMatch ? Number(priceMatch[1]) : null,
         timestamp: row[COLUMN_TIMESTAMP] ?? '',
         wantsToHelp: row[COLUMN_WANTS_TO_HELP] ?? '',
-        comment: priceMatch ? '' : COMMENT_NO_PRICE,
       };
     });
   }
