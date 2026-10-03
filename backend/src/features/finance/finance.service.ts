@@ -17,10 +17,11 @@ export class FinanceService {
     let expected = 0;
 
     for (const ticketEntry of ticketEntries) {
-      expected += ticketEntry.price;
+      const price = ticketEntry.price ?? 0;
+      expected += price;
       const status = this.paymentMatchingService.determineTicketPaymentStatus(ticketEntry, payments);
       if (status === 'paid') {
-        paid += ticketEntry.price;
+        paid += price;
       }
     }
 

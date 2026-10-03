@@ -91,20 +91,26 @@ describe('TicketModelService', () => {
     expect(entry.price).toBe(price);
   });
 
-  it('throws when the ticket category contains no price', () => {
-    const sheet = buildSheet([
-      {
-        Zeitstempel: '23.08.2026 12:00:00',
-        Vorname: 'Felix',
-        Nachname: 'Müller',
-        'Ticketkategorie (Preis pro Person inkl. Verpflegung)': 'Kategorie ohne Preis',
-        Mitmachen: 'Ja',
-        'E-Mail-Adresse': 'felix@example.com',
-      },
-    ]);
+  it.each(['Kategorie ohne Preis', '145', ''])(
+    'keeps the entry with price null when category "%s" contains no price',
+    (category) => {
+      const sheet = buildSheet([
+        {
+          Zeitstempel: '23.08.2026 12:00:00',
+          Vorname: 'Felix',
+          Nachname: 'Müller',
+          'Ticketkategorie (Preis pro Person inkl. Verpflegung)': category,
+          Mitmachen: 'Ja',
+          'E-Mail-Adresse': 'felix@example.com',
+        },
+      ]);
 
-    expect(() => service.mapToTicketEntries(sheet, 'event-1')).toThrow(/No price found in ticket category/);
-  });
+      const [entry] = service.mapToTicketEntries(sheet, 'event-1');
+
+      expect(entry.category).toBe(category);
+      expect(entry.price).toBeNull();
+    },
+  );
 
   it('maps multiple rows', () => {
     const sheet = buildSheet([

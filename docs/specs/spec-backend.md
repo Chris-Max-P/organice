@@ -10,7 +10,7 @@
 | 2 | Google integration service | Read a private Google Sheet via a service account over the Sheets API v4, in-memory, re-fetched on every app start | [Section 2](#2-google-integration-service) |
 | 3 | Mail integration service | Search a hardcoded IMAP mailbox provider-independently by sender/subject/time range; parse PayPal payment mails (amount, name) | [Section 3](#3-mail-integration-service) |
 | 4 | Secrets management service | Central storage of values worth protecting (keyfile, sheet ID, mail credentials) via `.env` + `.gitignore` (`backend/envs/`), server-side | [Section 4](#4-secrets-management-service) |
-| 5 | Ticket/participant model | Map sheet rows to `TicketEntry` (hardcoded column mapping + category→price lookup) | [Section 5](#5-ticketparticipant-model) |
+| 5 | Ticket/participant model | Map sheet rows to `TicketEntry` (hardcoded column mapping + price parsed from the category; `null` if unparseable) | [Section 5](#5-ticketparticipant-model) |
 | 6 | Payment matching service | Assign payment mails to TicketEntries via string name matching (full name / initial+surname); derived status open/paid/unclear, manually overridable | [Section 6](#6-payment-matching-service) |
 | 7 | Aggregation service | Generic grouping of TicketEntries by a field (`category`, `wantsToHelp`) → `{ value, count, entries }[]` | [Section 7](#7-aggregation-service) |
 | 8 | Finance service | Figures `{ paid, expected }` from TicketEntry prices + derived payment status, rounded raw numbers | [Section 8](#8-finance-service) |
@@ -256,7 +256,7 @@ in the repository/codebase, and especially not in the frontend bundle.
 **Model**
 - TicketEntry: id (row number in the Google Sheet, 1-based, header = row 1 →
   first data row = 2), event_id, firstName, lastName, name (composed), category,
-  price (fixed per category), timestamp, wantsToHelp
+  price (fixed per category, `null` if not parseable), timestamp, wantsToHelp
 - `id` serves the payment matching service (section 6) as `ticketEntryRef`;
   `firstName`/`lastName` are needed there in addition to the composed `name` for
   the initial+surname match
@@ -275,16 +275,17 @@ in the repository/codebase, and especially not in the frontend bundle.
 - Price assignment: the price is **parsed out of the category label** with the
   pattern `/(\d+)\s*€/`, not looked up in a fixed table. The labels carry the
   price in their text, e.g. `4er / 5er Zimmer ➡️ 175€`
-- The label is trimmed before parsing. A category with no parseable price throws
-  an error — no default and no guessed value, consistent with the fail-loudly
-  behaviour of sections 2/3
+- The label is trimmed before parsing. A category with no parseable price does
+  **not** abort the import: the entry is kept with `price: null` — no default
+  and no guessed value. Rationale: one malformed form answer (e.g. a bare `145`)
+  must not keep the server from starting
 - Rationale: the category labels are maintained by hand in the Google Form, so
   wording and spacing change over time. A fixed price table breaks on every such
   edit, and breaks silently — parsing the label keeps a single source of truth in
   the form
 - Consequence: new categories work without a code change, as long as the label
   contains a price. The trade-off is a dependency on the label format; if someone
-  removes the price from a label, the sheet import fails loudly
+  removes the price from a label, the affected entries get `price: null`
 - Provision of the list for the frontend (dashboard/aggregation) over the API
 
 **Open questions**
@@ -395,6 +396,7 @@ in the repository/codebase, and especially not in the frontend bundle.
 - **Expected**: the summed price of **all** TicketEntries, regardless of payment
   status (open/unclear/paid) — corresponds to the full expected revenue if
   everyone who signed up pays
+- Entries with `price: null` (section 5) count as 0 in both figures
 - The payment status is calculated by the finance service itself (internally
   using `PaymentMatchingService.determineTicketPaymentStatus`, section 6) — the
   caller passes only TicketEntries + Payments (raw data), analogous to the
