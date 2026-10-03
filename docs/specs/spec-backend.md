@@ -15,6 +15,8 @@
 | 7 | Aggregation service | Generic grouping of TicketEntries by a field (`category`, `wantsToHelp`) → `{ value, count, entries }[]` | [Section 7](#7-aggregation-service) |
 | 8 | Finance service | Figures `{ paid, expected }` from TicketEntry prices + derived payment status, rounded raw numbers | [Section 8](#8-finance-service) |
 | 9 | Dashboard data API | Express REST API per widget (`/dashboard/participants`, `/dashboard/finance`); bootstrap (sheet + mail + matching) before `app.listen`, in-memory | [Section 9](#9-dashboard-data-api) |
+| 10 | Database | PostgreSQL via Kysely; PGlite in-process now, a PostgreSQL server later; migrations applied before `app.listen` | [Section 10](#10-database) |
+| 11 | Tasks API | `GET /tasks/all`, `POST /tasks`; tasks and their update thread, persisted | [Section 11](#11-tasks-api) |
 
 ---
 
@@ -28,7 +30,8 @@ The admin tool grows by feature: the organiser side of tasks
 ([docs/design/tasks.md](../design/tasks.md)) is added to this backend as a new
 feature folder. Helpers get their own app (the end-user PWA of
 [ADR-001](../adr/ADR-001-frontend-stack.md)), which uses this same backend —
-there is no second backend. Hosting, persistence and protecting the admin
+there is no second backend. Persistence is PGlite now and a PostgreSQL server
+later ([ADR-005](../adr/ADR-005-persistence.md)). Hosting and protecting the admin
 endpoints once helpers reach the backend from outside are still open (see the
 tasks design, "Architectural consequence").
 
@@ -442,9 +445,9 @@ in the repository/codebase, and especially not in the frontend bundle.
   reachable server without a data state
 - `event_id`: since the event service is deferred (section 1), a fixed
   placeholder value is used in `loadEventData()`
-- Tasks will be the first feature with data written at runtime rather than read
-  at startup, so it will need persistence that `EventData` does not provide;
-  that is specified with the feature
+- Tasks are the first feature with data written at runtime rather than read at
+  startup; they are persisted in the database (sections 10 and 11), not in
+  `EventData`
 
 **Technical implementation**
 - Framework: **Express**, CORS via the `cors` middleware without origin
@@ -456,6 +459,56 @@ in the repository/codebase, and especially not in the frontend bundle.
 
 **Open questions**
 - None open.
+
+---
+
+## 10. Database
+
+See [ADR-005](../adr/ADR-005-persistence.md).
+
+- `core/database/`: `openDatabase({ dataDir?, migrations? })` opens PGlite through
+  Kysely (`kysely-pglite-dialect`) and applies pending migrations. Without
+  `dataDir` the database is in memory (tests)
+- Data folder: env variable `DATABASE_DIR`, default `backend/data/`, excluded
+  from git
+- Startup: `server.ts` opens the database alongside `loadEventData()`; the
+  server only listens once both succeed. A failing migration aborts startup.
+  Ctrl+C / SIGTERM closes the database cleanly
+- Schema: one interface per table in `database.types.ts`; migrations as
+  TypeScript files (`up`/`down`) listed explicitly in `migrations/index.ts`,
+  named `NNNN-description` and applied in that order
+- Tables: see the tasks design, "Data model"
+- Moving to a PostgreSQL server later: swap the dialect for Kysely's
+  `PostgresDialect` with `pg` and a connection string; queries stay unchanged
+
+---
+
+## 11. Tasks API
+
+Feature router `features/tasks/`, mounted in `app.ts` with the database.
+Responses are aggregated by the backend and shaped for the view.
+
+**Endpoints**
+
+```
+GET /tasks/all
+→ 200  [{ "id": 1, "title": "Getränke besorgen", "description": "50 Kisten Wasser …" }]
+
+POST /tasks
+   body { "title": "Getränke besorgen", "description": "50 Kisten Wasser …" }
+→ 201  { "id": 1, "title": "Getränke besorgen", "description": "50 Kisten Wasser …" }
+→ 400  { "error": "title and description are required" }
+```
+
+- `GET /tasks/all` returns all tasks of the event (`EVENT_ID`), newest first
+- `POST /tasks` returns `400` when `title` or `description` is missing, not a
+  string, or only whitespace. Values are trimmed before saving
+- Creating a task writes the task and its first update (the brief, `author_id`
+  null, same text as the description) in one transaction
+- There is no endpoint to edit or delete an update; that keeps the brief
+  immutable
+- Later tickets extend the task object: `helperNames: string[]` (02), the
+  update thread (03), further fields (05), `status` (06)
 
 ---
 

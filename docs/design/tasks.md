@@ -227,9 +227,29 @@ description later drifts.
 and helpers must reach the same backend the organiser writes to. That does not
 fit the local, core-team-only operation of ADR-003 (no access control, no
 deployment, data held only in memory). Still to decide before the helper side
-can be built: hosting the backend, persistence, protecting the admin endpoints
+can be built: hosting the backend, protecting the admin endpoints
 once the backend is reachable from outside, and the frontend stack of the
 helper PWA.
+
+### Data model
+
+PostgreSQL, see [ADR-005](../adr/ADR-005-persistence.md). Four tables; each
+ticket adds the columns it needs.
+
+| Table | Columns | From ticket |
+|---|---|---|
+| `people` | `id`, `name` (unique, the identity), `role` (`core_team` \| `helper`) | 02 |
+| `tasks` | `id`, `event_id`, `title`, `description` (helper-editable), `created_at`; later `status`, `deadline`, `budget`, `category`, `helpers_needed` | 01 |
+| `task_updates` | `id`, `task_id` → tasks, `author_id` → people (null for the brief), `text`, `created_at` | 01 |
+| `task_helpers` | `task_id` → tasks, `person_id` → people; primary key on both | 02 |
+
+- **People, not helpers:** helpers and core-team members are one list of people.
+  A person's role determines what they may do. "Helper" stays the domain term
+  for a person with the `helper` role.
+- **The brief** is a task's first update (lowest `id`). It is immutable because
+  no endpoint edits or deletes updates.
+- **The backend aggregates:** API responses are shaped for the view (e.g. a task
+  with its helper names), so the frontend never joins tables.
 
 ---
 
