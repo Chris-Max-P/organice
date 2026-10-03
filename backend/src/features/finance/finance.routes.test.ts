@@ -20,6 +20,7 @@ function buildTicket(overrides: Partial<TicketEntry> = {}): TicketEntry {
     price: 175,
     timestamp: '23.08.2026 12:00:00',
     wantsToHelp: 'Ja',
+    comment: '',
     ...overrides,
   };
 }

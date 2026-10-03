@@ -16,6 +16,7 @@ function buildTicket(overrides: Partial<TicketEntry> = {}): TicketEntry {
     price: 175,
     timestamp: '23.08.2026 12:00:00',
     wantsToHelp: 'Ja',
+    comment: '',
     ...overrides,
   };
 }
@@ -45,6 +46,15 @@ describe('FinanceService', () => {
     const result = service.calculateSummary(tickets, []);
 
     expect(result.expected).toBe(510);
+  });
+
+  it('counts TicketEntries with price null as 0', () => {
+    const tickets = [buildTicket({ id: 2, price: 175 }), buildTicket({ id: 3, price: null })];
+    const payments = [buildPayment({ ticketEntryRef: 3, status: 'paid' })];
+
+    const result = service.calculateSummary(tickets, payments);
+
+    expect(result).toEqual({ paid: 0, expected: 175 });
   });
 
   it('sums "paid" only over TicketEntries with derived status "paid"', () => {
