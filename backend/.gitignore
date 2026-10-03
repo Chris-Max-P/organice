@@ -2,3 +2,4 @@ node_modules/
 dist/
 envs/
 !envs/.env.local.example
+data/
