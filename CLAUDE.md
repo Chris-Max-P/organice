@@ -30,3 +30,4 @@ code, identifiers, comments, tests, and documentation — not to user-facing cop
 | [ADR-002](./docs/adr/ADR-002-projektstruktur.md) | Project structure & AI-assisted development | `/docs` folder for attachments/ADRs, AI-assisted development with Claude |
 | [ADR-003](./docs/adr/ADR-003-admin-dashboard-trennung.md) | Admin dashboard separation | The admin dashboard is a standalone, locally used backend tool, separate from the end-user PWA |
 | [ADR-004](./docs/adr/ADR-004-backend-stack-dashboard.md) | Admin dashboard backend stack | Node/Express backend (REST API) + separate Angular frontend, no SSR. Frontend is temporarily plain HTML/JS/CSS — see the frontend spec |
+| [ADR-005](./docs/adr/ADR-005-persistence.md) | Persistence | PostgreSQL: PGlite (in-process, npm) for local dev and tests now, a PostgreSQL server once the backend is hosted |

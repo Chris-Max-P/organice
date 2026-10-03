@@ -21,9 +21,10 @@ section 3), so no manual "fetch mails" button is needed.
 This frontend is the core team's application, not a single-purpose dashboard.
 Further features land here as additional feature folders (section 3) — the next
 one is the organiser side of tasks (see
-[docs/design/tasks.md](../design/tasks.md)). Helpers will get their own app or
-at least their own view onto the same application; which of the two is decided
-when the helper side is specified, not here.
+[docs/design/tasks.md](../design/tasks.md)), reached through a menu item
+("Aufgaben") next to the dashboard. Helpers get their own app, the end-user PWA
+of [ADR-001](../adr/ADR-001-frontend-stack.md), which talks to the same backend;
+it is not part of this application.
 
 ### Interim deviation from ADR-004
 
@@ -90,7 +91,8 @@ frontend/
     main.js                     # entry point: list of widgets, one container each, mounts them
     core/                       # app-wide plumbing, no UI
       config.js                 # API base URL
-      http.js                   # getJson(): fetch + response.ok check + JSON
+      http.js                   # getJson(), postJson(): fetch + response.ok check + JSON
+      router.js                 # hash router: '#/' dashboard, '#/aufgaben' tasks (section 12)
     shared/                     # reusable, feature-agnostic UI and helpers
       format.js                 # de-DE currency and count formatting
       widget-card/
@@ -108,6 +110,10 @@ frontend/
         finance.api.js          # fetchFinanceSummary + response typedefs
         finance-widget.js
         finance.css
+      tasks/
+        tasks.api.js            # fetchTasks, createTask + response typedefs
+        tasks-page.js           # create form + task list (section 12)
+        tasks.css
 ```
 
 **Dependency rules**
@@ -144,6 +150,8 @@ already sends permissive CORS headers, so no proxy is involved.
 |---|---|
 | `GET /dashboard/participants?groupBy=category\|wantsToHelp` | `{ value, count, entries: { firstName, lastName }[] }[]` |
 | `GET /dashboard/finance` | `{ paid: number, expected: number }` |
+| `GET /tasks/all` | `{ id, title, description }[]`, newest first |
+| `POST /tasks` with `{ title, description }` | `201` `{ id, title, description }`, or `400` `{ error }` |
 
 **Data access**: `core/http.js` exports `getJson(path)`, which wraps `fetch`,
 checks `response.ok`, and returns parsed JSON. Each feature's `<feature>.api.js`
@@ -360,13 +368,47 @@ Explicitly deferred, in rough order of expected need:
   backend (currently data is only read at backend startup).
 - **Sorting**: sort controls for groups and members. Neither side sorts today, so
   group order follows sign-up order and may shift as new sign-ups arrive.
-- **Tasks feature** (organiser side, [docs/design/tasks.md](../design/tasks.md)):
-  a new `features/tasks/` folder. It is the first feature that needs more than a
-  widget (a full task list, creating a task), so it will also bring the first
-  page-level navigation; that shell belongs in `core/` and is specified together
-  with the feature.
+- **Router library**: the hand-written hash router (section 12) is replaced
+  once navigation needs more than two fixed pages (parameters, nested routes).
 - **Further widgets**: each with its own feature folder and endpoint, following
   the existing pattern.
 - **Mobile pass**: a genuine responsive design, starting with the participant
   table.
 - **UI component library**: revisit if a widget needs real grid features.
+
+---
+
+## 12. Tasks page
+
+Organiser side of tasks ([docs/design/tasks.md](../design/tasks.md), ticket 01).
+It is the first page besides the dashboard, so it brings page-level navigation.
+
+**Navigation**
+
+- A menu in the page header with two items: "Dashboard" and "Aufgaben". The
+  active item is highlighted
+- `core/router.js`: a hand-written hash router (about 15 lines). `#/` (and an
+  empty hash) shows the dashboard, `#/aufgaben` the tasks page. It listens to
+  `hashchange`, so the back button, refresh and bookmarks work without server
+  configuration
+- `main.js` registers the two pages with the router instead of mounting the
+  widgets directly. Each page is mounted into `<main>` when shown
+- Replaced by a router library once navigation needs more (section 11)
+
+**Create form** (above the list)
+
+- Fields "Titel" and "Beschreibung" (textarea), button "Aufgabe anlegen"
+- Both fields are required; the button sends `POST /tasks`
+- After saving, the form clears and the list reloads. If saving fails, an error
+  appears next to the button: "Aufgabe konnte nicht gespeichert werden."
+
+**Task list**
+
+- All tasks from `GET /tasks/all`, newest first
+- One line per task with a fixed line height:
+  - title in bold
+  - description next to it, cut off with an ellipsis when it does not fit
+  - assigned helper names on the right (empty until ticket 02 adds
+    `helperNames`)
+- Empty list: "Noch keine Aufgaben"
+- Loading and error states as in section 7

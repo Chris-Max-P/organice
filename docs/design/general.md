@@ -12,22 +12,6 @@ existing building blocks (Nextcloud, Loomio, Engelsystem, Open Collective …), 
 dedicated app is now to be developed — initially with a reduced, clearly
 delimited feature set.
 
-## 2. Project scope
-
-### 2.1 Included in this step
-
-- **Event overview** — create events as shared projects, dashboard with key
-  figures
-- **Tasks** — task management with role-based visibility, a take-over function,
-  and categorisation
-
-### 2.2 Deliberately excluded (later stages)
-
-Identified as relevant by the research, but not part of this cut: decision
-making/consent processes, detailed finance management (bookings, receipts),
-guest/travel planning, wiki/document storage, communication features (chat,
-forums).
-
 ## 3. Target group & roles (assumption, to be confirmed)
 
 - **Organiser** — creates events, manages task circles, sees everything
@@ -38,53 +22,8 @@ forums).
 The role model and permissions are to be specified in more detail in a follow-up
 prompt.
 
-## 4. Feature overview
-
-### 4.1 Event overview
-
-**Architecture note**: the event overview/dashboard is aimed at
-administrators/the core team and is used exclusively locally (no end-user
-access) — see [ADR-003](./adr/ADR-003-admin-dashboard-trennung.md). It is to be
-considered separately from the end-user PWA (section 4.2,
-[ADR-001](./adr/ADR-001-frontend-stack.md)).
-
-**Create an event**
-- An event is created as a shared project (several people contribute to it, it is
-  not purely single-person administration)
-
-**Dashboard**
-- Participant numbers (actual figure, possibly in relation to a target)
-- Finance state (at the level of key figures — details deliberately out of scope,
-  see 2.2)
-- Task status (e.g. share done/open/in progress, possibly by circle or category)
-
-### 4.2 Tasks
-
-**Task overview and responsibilities**
-
-Task list, per task with:
-- Description
-- Scope (effort/size)
-- Point in time
-- Helpers available / helpers needed (target vs actual)
-- Progress / current state (possibly as a percentage)
-- Status (open → distributed → full, once the helper demand is covered)
-
-**Task circles**
-- Grouping of tasks into circles
-- Visibility configurable per role, to avoid information overload
-
-**Open tasks**
-- List of open tasks with a short description, the currently responsible person,
-  and a "take on task" function
-- Idea: raffle tasks (a mechanism for allocation instead of/in addition to
-  voluntary take-over) — status: to be clarified whether and how
-
-**Task categories**
-- Four levels: must / should / could / may (MoSCoW-style prioritisation)
-
-*Note: the last item of the original list was empty in the input — to be added in
-a follow-up prompt if needed.*
+## Feature overview
+Feature descriptions found in docs/design
 
 ## 5. Quality goals for further planning
 
