@@ -1,0 +1,98 @@
+/* Tasks page — see docs/specs/spec-frontend.md, section 12 */
+
+.tasks {
+  display: grid;
+  gap: var(--spacing);
+}
+
+.tasks__form {
+  display: grid;
+  gap: 12px;
+}
+
+.tasks__field {
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.tasks__field input,
+.tasks__field textarea {
+  font: inherit;
+  font-weight: normal;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.tasks__field input {
+  min-height: 44px;
+}
+
+.tasks__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.tasks__submit {
+  min-height: 44px;
+  padding: 0 var(--spacing);
+  font: inherit;
+  color: var(--color-surface);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.tasks__submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.tasks__error {
+  margin: 0;
+  color: var(--color-error);
+}
+
+.tasks__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tasks__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tasks__item:last-child {
+  border-bottom: none;
+}
+
+.tasks__title {
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tasks__description {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+}
+
+.tasks__helpers {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

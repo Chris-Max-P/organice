@@ -9,7 +9,7 @@ const DATABASE_DIR = process.env.DATABASE_DIR ?? 'data';
 
 Promise.all([openDatabase({ dataDir: DATABASE_DIR }), loadEventData()])
   .then(([db, eventData]) => {
-    const app = createApp(eventData);
+    const app = createApp(eventData, db);
     const server = app.listen(PORT, () => {
       console.log(`Dashboard backend listening on port ${PORT}`);
     });
