@@ -1,4 +1,4 @@
-// GET /tasks/all, POST /tasks — see docs/specs/spec-backend.md, section 11
+// GET /tasks/all, POST /tasks — see docs/design/tasks.md, "Core-team task page (first slice)"
 
 import { Router } from 'express';
 import { Kysely } from 'kysely';

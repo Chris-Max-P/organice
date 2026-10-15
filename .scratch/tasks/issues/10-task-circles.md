@@ -1,8 +1,8 @@
 # 10: Task circles (planned extension)
 
-**What to build:** tasks are grouped into circles, and each circle's visibility is configurable per role to avoid information overload. See "Later — planned extensions" in `docs/design/tasks.md`.
+**What to build:** visibility per area configurable per role, to avoid information overload once the task list becomes unreadable. Builds on areas (13). A helper's "my tasks" still shows only their own tasks. See "Later — planned extensions" in `docs/design/tasks.md`.
 
-**Blocked by:** 01
+**Blocked by:** 13
 
 **Status:** needs-definition
 

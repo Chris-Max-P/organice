@@ -1,68 +1,76 @@
 # Tasks — product design
 
-Task management for event teams: the core team keeps an overview of all tasks
-and hands individual tasks to helpers.
+Task distribution during festival preparation: the core team keeps an overview
+of all tasks and hands individual tasks to helpers. Project-wide context
+(festival size, preparation timeline, how the team works today, the tool
+dispute, principles) lives in [general.md](./general.md).
+
+**Scope:** tasks *in preparation*. Organising the on-site work (e.g. a kitchen
+shift plan) is itself a preparation task; its result lives elsewhere. Shift
+planning is not part of this design.
 
 ## 1. Problem
 
-> A **core-team member** struggles with **knowing where every task actually
-> stands, without chasing people for it**, because **any tool that gives them
-> that overview forces every helper to learn it too — so helpers resist, keep
-> their own systems, and the state fragments across messengers, Notion,
-> spreadsheets, Miro and people's heads**, which costs them **forgotten tasks,
-> material and decision needs surfacing too late, and organisers spending the
-> run-up chasing status instead of enjoying the thing they are building**.
+### Core problems
+
+1. **Overview** — nobody knows where every task stands.
+2. **Coordination** — there is no place for targeted coordination. In WhatsApp,
+   information gets lost in normal chats; many groups quickly become confusing.
+3. **Task knowledge** — information that belongs to a task and must be read by
+   those involved is not recorded clearly and cannot be retrieved in a targeted
+   way. Files are scattered.
+
+**Overload** of the main organiser is a *consequence* of missing overview, not
+a separate root problem.
 
 ### How it is solved today
 
-There is no single system. Each person mixes tools differently:
-
-- **Shared tasks:** Notion, Asana, spreadsheets, Miro, WhatsApp and other
-  messengers, in-person meetings.
-- **Personal tasks:** each helper's own private system — Apple Notes, Obsidian
-  and the like.
-
-The argument over which tool to use is itself part of the pain, not just a
-symptom of it.
-
-### What is problematic about it
+There is no single system for shared tasks: Notion, Asana, spreadsheets, Miro,
+WhatsApp and other messengers, in-person meetings. Tasks are distributed by a
+mix of self sign-up, direct asking and volunteering in meetings (see
+[general.md](./general.md), section 3).
 
 - **Tasks are never brought together.** Each tool holds a fragment; nobody has
   the whole picture.
 - **Duplicates and scattered information.** The same task exists in several
   places, each with a different piece of what is known about it.
 - **Status is not tracked in practice.** The tools could track it, but nobody
-  keeps it current, so there is no overview of what is done and what is not.
+  keeps it current.
 - **The capable tools are too complicated for everyone.** Notion and PM tools
   demand that every helper learns them; most helpers have a simple job and
   will not.
 
-These share one root cause: an **asymmetry**. Every incumbent buys the
-organiser an overview by taxing the helper. Most helpers will never need the
-concepts the tool invents, so they opt out — and the overview stays empty.
+### Example: the forgotten ingredients
 
-### Signal — what we would observe if this were solved
+Ingredients for cooking were forgotten because the main organiser had too many
+tasks. The shopping was not organised or thought through in advance and
+happened spontaneously. It took long, food was late, and the whole evening
+schedule slipped. The gap only surfaced *during* the shopping.
 
-Both must hold. Either alone is a failure.
+Causes:
 
-1. The organiser walks into the last pre-event meeting already knowing the state
-   of every task. Nobody had to be asked.
-2. A helper completes their task having learned nothing. They saw only their own
-   work, and never needed a concept the tool invented.
+- The shopping was not recognised as a task of its own ("I'll just do it on the
+  side").
+- Handing it off would have cost more than doing it: recipes and quantities
+  were only in one person's head.
 
-### Go / no-go
+### Product boundary
 
-**Go.** The asymmetry is unserved by every tool the interviewed teams already
-use, and it is narrow enough to build. This frame makes features the enemy:
-almost everything in the original notes is organiser-side complexity, and
-signal 2 forbids any of it from reaching the helper.
+- The app is **the one place where the shared state lives** — for tasks handed
+  over or worked on between people. Personal memory aids stay in each person's
+  own tools (section 7).
+- Coordination **about a task** (agreements, current information) belongs to
+  the task. Cross-area decisions and general organisational chatter stay out —
+  unless a decision gets its own task.
+- A decision to be made is **a task** ("Decide: two stages yes/no"), done once
+  decided. No separate thread concept.
 
 ---
 
 ## 2. Evidence
 
-Five people across three event-organising teams. Four were asked about their
-work; one was watched doing it.
+Five people across three event-organising teams, plus a grilling session with
+the product owner. Four were asked about their work; one was watched doing it.
 
 | Claim | Tag |
 |---|---|
@@ -70,26 +78,23 @@ work; one was watched doing it.
 | One team's actual working method | **Observed** ×1 |
 | Tasks get forgotten; material needs surface too late | **Reported** |
 | Helpers will not learn a complex tool for a simple job | **Reported** |
-| Helpers are content seeing only their own work | **Assumed** |
+| The core team is split into an analogue and a digital camp | **Reported** (two groups) |
+| Helpers are content seeing only their own tasks | **Assumed** |
 | A name is a sufficient identifier within one event | **Assumed** |
 
 ### Riskiest assumption
 
-**A helper will go somewhere to report the state of their work.**
+**Does the task app offer users any added value at all, or would they rather
+work in their familiar, own tools?**
 
-Existential, not merely risky. Without two-way updates this product collapses
-into any other task or note app — the value is specifically the working-together
-mode where both ends write. If helpers do not write back, the board is empty and
-the organiser is chasing again, now through a tool nobody updates.
-
-*Status: untested.* See section 6.
+*Status: untested.* See section 8.
 
 ### Other open assumptions
 
-- **Helpers are content seeing only their own work.** If wrong, the app reads as
-  being handed chores by management rather than building something together —
+- **Helpers are content seeing only their own tasks.** If wrong, the app reads
+  as being handed chores by management rather than building something together —
   corrosive in a volunteer context. Cheapest fix if it breaks: surface the
-  event's shared progress without surfacing other people's task detail.
+  event's shared progress without surfacing other tasks' detail.
 - **A name is a sufficient identifier.** Anyone who knows a helper's name can
   claim their tasks from a fresh device. Accepted knowingly: the population is a
   small volunteer group with no adversary and nothing sensitive behind the
@@ -99,34 +104,27 @@ the organiser is chasing again, now through a tool nobody updates.
 
 ## 3. Concept
 
-**An installed helper app whose default view is a dashboard of my tasks, plus
-an organiser task view over all of them.**
+**An installed helper app whose default view is my tasks, plus core-team
+overviews over all of them.**
 
 The helper installs the web app to their home screen, enters their name once,
-and is remembered by the device. Opening it shows their dashboard: the tasks
-assigned to them and nothing else. Each task carries a mutable **description**
-and an append-only **update thread**. The organiser's view lists every task of
-the event, on phone or desktop.
+and is remembered by the device. Opening it shows their tasks and nothing else.
+Each task carries a mutable **description** and an append-only **update
+thread**. The core team's views list every task of the event, on phone or
+desktop.
 
-The organiser team may use the richer view; helpers get the minimal one. The
-complexity lives on the organiser side and never reaches the helper.
+The core team may use the richer views; helpers get the minimal one. The
+complexity lives on the core-team side and never reaches the helper.
 
-### Ownership principle
+### Two layers
 
-The organiser **initialises** a task and can **comment** on it. The organiser
-**cannot edit its description**. Once handed off, the task's description belongs
-to the helper, and the task should reflect who is actually responsible for it.
-An organiser overwriting a helper's work is demoralising and undoes the handoff
-this product exists to perform.
-
-Two layers with different mutability:
-
-- **Description** — mutable, helper-owned. The living statement of what the task
-  actually is, which sharpens as the helper learns the job.
-- **Updates** — append-only, nobody's to overwrite. Entry 1 is the organiser's
+- **Description** — the current state of affairs, what applies *now*. Read
+  instead of scrolling. Shared by everyone involved and the core team
+  (section 4, "Editing the description").
+- **Updates** — append-only, nobody's to overwrite. Entry 1 is the core team's
   original brief, so what was originally asked stays readable forever.
 
-When the organiser creates a task, the description they write is stored twice:
+When the core team creates a task, the description they write is stored twice:
 as the task's initial description, and as update 1 — the **brief**. The brief
 is the helper's basis for knowing what the task needs. A task cannot be created
 without one, and it stays the first entry of the thread however far the
@@ -136,85 +134,213 @@ description later drifts.
 
 | Option | Why not |
 |---|---|
-| **One link per task** — task is the unit; the organiser drops a per-task link into the channel the helper already uses; no app, no account | Recommended by the designer, overruled by the product owner: a link in a WhatsApp thread is buried by scrollback within a day, whereas a home-screen icon stays reachable. The objection it was chosen against — that "a list of my tasks" is itself a concept to learn — stands, and is one thing validation should watch for. |
-| **The chat is the app** — no helper-facing surface; the board pushes structured messages, the helper answers in their messenger, replies land on the board | Best fit for the riskiest assumption, worst product bet. The interviewed teams use *different* messengers, making the product hostage to platform APIs, approval and cost — and a chat thread cannot hold budget, deadline and state legibly for the organiser. |
-| **Roles, task circles and a visibility matrix** — the literal reading of the original notes | This is Asana, which is on the workaround list *because it failed*. Building a permission system to hide complexity from helpers is the wrong lever; giving them nothing to hide from is the right one. Task circles return later as an extension (section 5), not as the core mechanism. |
+| **One link per task** — task is the unit; the core team drops a per-task link into the channel the helper already uses; no app, no account | Recommended by the designer, overruled by the product owner: a link in a WhatsApp thread is buried by scrollback within a day, whereas a home-screen icon stays reachable. The objection it was chosen against — that "a list of my tasks" is itself a concept to learn — stands, and is one thing validation should watch for. |
+| **The chat is the app** — no helper-facing surface; the board pushes structured messages, the helper answers in their messenger, replies land on the board | The interviewed teams use *different* messengers, making the product hostage to platform APIs, approval and cost — and a chat thread cannot hold budget, deadline and state legibly for the core team. |
+| **Roles, task circles and a configurable visibility matrix** — the literal reading of the original notes | This is Asana, which is on the workaround list *because it failed*. There are two fixed roles and one fixed table of who sees and edits what (section 4); nothing is configurable. Task circles return later as an extension (section 6). |
 
 ---
 
-## 4. Core flow
+## 4. Functional design
 
-> The organiser opens the task view, creates a task and writes its description.
-> That description becomes the task's initial description and is also stored as
-> **update 1**, the brief — immutable. They assign it to a helper.
->
-> The helper opens the installed app on their phone. First time only, they enter
-> their name; the device remembers them from then on. The app shows their
-> dashboard — their tasks and nothing else. They tap one and read the brief.
->
-> As they work they append updates: *"Bierbänke geklärt, brauche noch einen
-> Transporter."* They also rewrite the description as the task's real shape
-> becomes clear. The brief in update 1 is untouched.
->
-> The organiser sees the movement and the material need in their task view — in
-> the run-up, not on the day. They can comment back, and can send a reminder to
-> the helper when a task has gone quiet.
->
-> The helper marks it done. It is done when the app says done.
+### Task
+
+| Element | Description |
+|---|---|
+| Title | Short name of the task. |
+| Description | The current state of affairs — what applies *now*. |
+| Update thread | Append-only history. Coordination and current information. Update 1 is the brief. |
+| Checklist | Shopping, inventory and packing lists; also sub-tasks and needs (see below). |
+| Attachments | Invoices, programme, spreadsheets, … |
+| Areas (tags) | Kitchen, technology, decoration, … — mainly for the core team. |
+| Category | muss / soll / kann / darf. |
+| Deadline | When the task is due. |
+| Budget | Money the helper may spend. |
+| People involved | Who is working on it. |
+| Status | Open or done. |
+
+### Checklist
+
+- An item is text plus a checkbox. Anyone involved may tick it.
+- **Rule:** as soon as an item needs its own person, deadline or history, it
+  becomes a task of its own. No nested task trees.
+- A **need** ("need a van") is added as an open checklist item. It is not a
+  category of its own.
+
+### Editing the description
+
+- Everyone involved and the core team may edit it.
+- Risk: the core team meddles in a helper's area of responsibility, and the
+  helper's work gets lost.
+- **Solution:** every change appears automatically in the update thread
+  ("Anna changed the description"); earlier versions can be restored. Nothing is
+  lost, and meddling becomes visible. The brief (update 1) is never affected.
+
+### Writing on someone's behalf
+
+The core team may write an update *for* someone, marked as "noted by X". This
+lets the core team take documentation work off helpers.
+
+### Attachments
+
+- The problem is **scattered files**.
+- Files can be uploaded or linked per task. Uploads go to the team's storage and
+  are linked automatically, so files don't scatter again.
+- The core team decides where files are stored: **one** storage location;
+  extendable later if needed.
+
+### Areas (tags)
+
+The core team defines the areas at the start of preparation; they can be
+extended at any time. No free typing (avoids "Deko", "deko", "Dekoration").
+
+### Who sees and edits what
+
+| | Helper (own task) | Core team |
+|---|---|---|
+| Description, checklist, thread, attachments | view and edit | view and edit |
+| Areas (tags) | not visible | view and edit |
+| Budget, deadline, category | view | view and edit |
+| Change who is involved | no | yes |
+
+Helpers see only tasks they are involved in. No hidden core-team notes on a
+task: they undermine trust and contradict the handoff.
+
+### No notifications
+
+The app sends no notifications about tasks. People decide for themselves when
+they come back to the app, and then see everything there. There is no marker
+for what changed since their last visit; the update thread is the history.
 
 ---
 
-## 5. Scope
+## 5. Overviews
+
+Four views, each answering different questions:
+
+| View | For | Answers |
+|---|---|---|
+| **Overview** | Core team | What is open? What has nobody? What is stuck? What is done? Who is working on what? What is due when? |
+| **Area view** | Semi-leads | The same, filtered by area. A filter, not a concept of its own. |
+| **My tasks** | Everyone | My own tasks. Helpers' default view in the helper app; for core-team members, a tab in their dashboard that filters the tasks to the ones they are involved in. |
+| **Meeting overview** | Meeting | What has happened since the last meeting? |
+
+### Core-team task page (first slice)
+
+The first version of the core-team side, reached through the "Aufgaben" menu
+item next to the dashboard.
+
+- **Create a task** above the list: "Titel" and "Beschreibung" are both
+  required; "Aufgabe anlegen" saves it. Leading and trailing spaces are dropped;
+  a field with only spaces counts as empty.
+- After saving, the form clears and the new task appears in the list. If saving
+  fails, the message "Aufgabe konnte nicht gespeichert werden." appears next to
+  the button.
+- **The list** shows all tasks of the event, newest first, one line per task:
+  title in bold, the description next to it (cut off when it does not fit), and
+  the names of the helpers on the right.
+- No tasks yet: "Noch keine Aufgaben". Loading and error messages as on the
+  dashboard ([admin-dashboard.md](./admin-dashboard.md), "Loading, error and empty states").
+
+### "Stuck"
+
+A task is stuck when it has had **no activity since the last meeting**. This
+adapts to the meeting rhythm by itself (months early on, weeks later) and needs
+no setting. A missed deadline always counts as stuck.
+
+### Meeting overview
+
+- A meeting is a date in the tool; the page is generated from it — no
+  preparation work.
+- Blocks: **done**, **has nobody**, **stuck** since the last meeting.
+- No **needs something** block: a shopping list has many open items that aren't
+  needs, and a pressing need shows as a stuck task anyway. Re-evaluate after
+  the pilot.
+
+### Role of the tool in meetings
+
+- The meeting stays analogue, enriched by information from the tool — not
+  overlaid by it.
+- One person has the tool open and looks things up when needed; the meeting
+  overview serves as preparation.
+- One person records new tasks and information during the meeting. The analogue
+  camp doesn't have to touch anything.
+
+---
+
+## 6. Scope
+
+### Participation minimum
+
+What the analogue camp has to do at minimum:
+
+- **Required:** view own tasks, tap "done".
+- **Optional:** write a one-line update now and then.
+- Anything beyond that, the core team can record on their behalf.
 
 ### In
 
 - Helper app: install to home screen, name-based first-run identity, device
   memory, name re-entry to recover tasks on a new device
-- Helper dashboard as the default view, showing **only** tasks assigned to them
-- Task: title, description (helper-editable), deadline, budget (money the helper
-  may spend), category (muss / soll / kann / darf), helpers needed, status
-- Append-only update thread; both organiser and helper append; update 1 is the
-  organiser's brief — the description written at creation, mandatory
-- Organiser task view over all tasks of the event, phone and desktop
-- Organiser-triggered reminders to a helper, delivered as a push notification
+- "My tasks" as the default view, showing **only** tasks the person is involved
+  in
+- Task with the elements of section 4
+- Append-only update thread; everyone involved and the core team append; update
+  1 is the brief — the description written at creation, mandatory
+- Description editable by everyone involved and the core team, with history and
+  restore
+- Writing an update on someone's behalf ("noted by X")
+- Overview, area view and meeting overview for the core team
+- "My tasks" tab in the core-team dashboard
 
 ### Later — planned extensions
 
+- **Recording meetings** (beyond the date that drives the meeting overview).
 - **Browse open tasks and apply.** Helpers can browse tasks that still need
-  helpers and apply for them. A task is full once it has as many helpers as it
-  needs. Built on top of the assigned-tasks feature; the dashboard of own tasks
-  stays the default view. Open tasks show only their own details, never who
-  else is on which task.
-- **Task circles.** Tasks are grouped into circles, and visibility of each
-  circle is configurable per role, to avoid information overload. Added once
-  the task list becomes unreadable — a scaling problem that does not exist yet.
-  Circles must not become something a helper has to understand: a helper's
-  dashboard still shows only their own tasks (signal 2).
+  people and apply for them. Addresses gathering co-organisers — part of the
+  problem, but not the first step. Needs a "helpers needed" number per task; a
+  task is full once it has as many helpers as it needs. The own-tasks view stays
+  the default. Open tasks show only their own details, never who is on them.
+- **Reuse** — create a new festival from the last one: tasks, descriptions and
+  checklists as a starting point, no history, no people. Probably the strongest
+  value over WhatsApp: the festival learns across years, not only individual
+  people.
+- **Invoices and finances** — invoices as attachments touch the finance part of
+  the dashboard; to be delimited separately.
+- **More than one file storage location** — only if needed.
+- **Task circles.** Visibility per area configurable per role, to avoid
+  information overload. Added once the task list becomes unreadable — a scaling
+  problem that does not exist yet. Circles must not become something a helper
+  has to understand: "my tasks" still shows only their own tasks.
 
 ### Out — non-goals
 
 - **Progress as a percentage.** Nobody produces that number honestly. The update
-  thread already carries progress in a form the organiser can act on: *"brauche
+  thread already carries progress in a form the core team can act on: *"brauche
   einen Transporter"* beats *"60 %"*.
-- **Effort estimate and scheduled time slot.** Deadline and helpers needed are
-  enough.
+- **Effort estimate and scheduled time slot.** Deadline is enough.
 - **Raffling tasks.** Solves "nobody volunteers", which is a different problem.
   No evidence volunteers dry up.
-- **Configurable notification settings.** One mechanism, no preferences.
-- **Automatic scheduled reminders.** Organiser-triggered only.
+- **Notifications of any kind** — push, reminders (core-team-triggered or
+  automatic), "what changed" markers. People come back on their own; the
+  overview shows stuck tasks.
 - **Passwords, email verification, accounts.** Identity stays weak by choice.
 - **Editing or deleting an update**, by anyone, including its author.
-- **Visibility into other helpers' tasks**, including who else is on which task.
+- **Visibility into tasks a helper is not involved in.**
+- **Hidden core-team notes on a task.**
+- **Nested task trees.**
+- **Bridges into personal tools** (calendar subscriptions, syncs) and per-task
+  links for them.
 
 ### Architectural consequence
 
 **Decisions (product owner):**
 
-- **Organiser side:** a feature of the existing core-team application — a
+- **Core-team side:** a feature of the existing core-team application — a
   `tasks` feature folder in its frontend and backend, next to participants and
-  finance (see the frontend spec, section 3, and the backend spec, "Code
-  structure"). Core-team members reach the task view through a **menu item next
-  to the dashboard** ("Aufgaben").
+  finance (see [frontend.md](../specs/frontend.md) and
+  [backend.md](../specs/backend.md), "Project structure" / "Code structure").
+  Core-team members reach the task views through a **menu item next to the
+  dashboard** ("Aufgaben").
 - **Helper side:** a separate app — the end-user PWA of
   [ADR-001](../adr/ADR-001-frontend-stack.md). It is not a mode or route of the
   core-team application, so
@@ -224,28 +350,35 @@ description later drifts.
   second backend.
 
 **Open consequence:** the helper app is installed, distributed and phone-first,
-and helpers must reach the same backend the organiser writes to. That does not
+and helpers must reach the same backend the core team writes to. That does not
 fit the local, core-team-only operation of ADR-003 (no access control, no
 deployment, data held only in memory). Still to decide before the helper side
-can be built: hosting the backend, protecting the admin endpoints
-once the backend is reachable from outside, and the frontend stack of the
-helper PWA.
+can be built: hosting the backend, protecting the admin endpoints once the
+backend is reachable from outside, the frontend stack of the helper PWA, and the
+team's file storage for attachments.
 
 ### Data model
 
-PostgreSQL, see [ADR-005](../adr/ADR-005-persistence.md). Four tables; each
-ticket adds the columns it needs.
+PostgreSQL, see [ADR-005](../adr/ADR-005-persistence.md). Each ticket adds the
+tables and columns it needs.
 
 | Table | Columns | From ticket |
 |---|---|---|
 | `people` | `id`, `name` (unique, the identity), `role` (`core_team` \| `helper`) | 02 |
-| `tasks` | `id`, `event_id`, `title`, `description` (helper-editable), `created_at`; later `status`, `deadline`, `budget`, `category`, `helpers_needed` | 01 |
-| `task_updates` | `id`, `task_id` → tasks, `author_id` → people (null for the brief), `text`, `created_at` | 01 |
+| `tasks` | `id`, `event_id`, `title`, `description`, `created_at`; later `status`, `deadline`, `budget`, `category` | 01 |
+| `task_updates` | `id`, `task_id` → tasks, `author_id` → people (null for the brief), `text`, `created_at`; later `noted_by_id` → people (on-behalf updates), `kind` (`update` \| `description_changed`) | 01 |
 | `task_helpers` | `task_id` → tasks, `person_id` → people; primary key on both | 02 |
+| `task_description_versions` | `id`, `task_id` → tasks, `text`, `edited_by_id` → people, `created_at` | — |
+| `checklist_items` | `id`, `task_id` → tasks, `text`, `done`, `position` | — |
+| `task_attachments` | `id`, `task_id` → tasks, `url`, `name`, `created_at` | — |
+| `areas` | `id`, `event_id`, `name` (unique per event) | — |
+| `task_areas` | `task_id` → tasks, `area_id` → areas; primary key on both | — |
+| `meetings` | `id`, `event_id`, `date` | — |
 
 - **People, not helpers:** helpers and core-team members are one list of people.
   A person's role determines what they may do. "Helper" stays the domain term
-  for a person with the `helper` role.
+  for a person with the `helper` role. Semi-leads are core-team members, not a
+  role of their own.
 - **The brief** is a task's first update (lowest `id`). It is immutable because
   no endpoint edits or deletes updates.
 - **The backend aggregates:** API responses are shaped for the view (e.g. a task
@@ -253,45 +386,81 @@ ticket adds the columns it needs.
 
 ---
 
-## 6. Validation — **not done**
+## 7. Double maintenance
+
+Nobody wants to maintain their tasks twice, so a task in the app may already be
+one too many. But when people work on something together, the one place where
+everything about the task lives doesn't exist anyway.
+
+- **What belongs in the app:** a task that several people work on, or whose
+  state someone other than the person doing it needs to know. Everything else
+  belongs in personal tools.
+- **Flexible participation, implicit:** there is no setting. A task works
+  whether or not the helper opens the app; the core team records what it learns
+  in conversation ("noted by X"). Accepted price: whoever doesn't participate
+  shifts the maintenance to the core team, and for those tasks the chasing comes
+  back.
+- **Pointer in personal tools:** nothing special — people write "it's in the
+  app". No per-task link feature.
+- **Digital camp:** core-team members who also plan in their own tools maintain
+  twice by their own choice. The app only asks for the part others need; it does
+  not try to replace personal tools.
+
+---
+
+## 8. Validation — **not done**
 
 Nobody outside the team has been through this flow. The concept above is
-unvalidated and stage 4 remains open.
+unvalidated.
 
-**Test to run, aimed at the riskiest assumption.** Take two people who actually
-helped at the last event. Ten minutes each, separately. Do not demo the app —
-walk them verbally through the moment they would use it: *"You've agreed to sort
-the beer benches. Two weeks before the event you find out you need a van. What do
-you do?"* Then show a paper or clickable version and watch where they hesitate,
-backtrack, or ask what something means.
+1. **A paper test with someone from the analogue camp.** Ten minutes, without a
+   demo. Walk them verbally through the moment they would use it: *"You've
+   agreed to sort the beer benches. Two weeks before the festival you find out
+   you need a van. What do you do?"* Then show a paper or clickable version and
+   watch where they hesitate, backtrack, or ask what something means.
+2. **A pilot in one area** (e.g. kitchen) during real preparation; everything
+   else runs as before.
 
-Watch for three things specifically:
+Watch for:
 
-1. Does the answer to that question ever involve **opening an app**, or is it
-   always "I message someone"? This is the riskiest assumption, answered.
-2. Do they treat the **description as theirs to edit**, or do they read it as the
-   organiser's text they should not touch? The ownership principle depends on
-   this.
+1. Does the answer to the van question ever involve **opening an app**, or is it
+   always "I message someone"?
+2. Do helpers accept that the **description is shared** with the core team, or
+   do core-team edits feel like meddling despite the visible history?
 3. Does "only my tasks" feel **focused or isolating**?
+
+**Success:** the meeting uses the overview, and coordination on pilot tasks
+leaves WhatsApp.
+
+**Failure signal:** tasks in the app go stale because the real state is kept
+elsewhere, and nobody in the meeting trusts the overview.
 
 Record every surprise here as it arrives. Surprises are the only findings that
 could not have been reasoned out in advance.
 
 ---
 
-## 7. Names
+## 9. Names
 
 The vocabulary the specification should use. Updating `CONTEXT.md` is the
 domain-modeling skill's job and is deliberately not done here.
 
-- **Task** — one unit of work handed to one or more helpers.
-- **Description** — the mutable, helper-owned statement of what the task is.
+- **Task** — one unit of work handed to one or more people.
+- **Description** — the mutable statement of what applies to the task now;
+  editable by everyone involved and the core team, with history.
 - **Update** — one entry in the append-only thread. Never edited, never deleted.
-- **Brief** — update 1: the description the organiser writes when creating the
+- **Brief** — update 1: the description the core team writes when creating the
   task, preserved unchanged. The helper's basis for knowing what is needed.
-- **Reminder** — an organiser-triggered push to a helper about one task.
-- **Dashboard** — the helper's default view: the tasks assigned to them.
+- **Noted by** — marks an update the core team wrote on someone's behalf.
+- **Checklist item** — text plus a checkbox on a task.
+- **Need** — an open checklist item for something the task requires.
+- **Area** — a core-team-defined tag grouping tasks (kitchen, technology, …).
+- **Category** — muss / soll / kann / darf.
 - **Budget** — the amount of money a helper may spend on a task.
+- **Stuck** — no activity since the last meeting, or a missed deadline.
+- **Meeting** — a date in the tool that drives the meeting overview.
+- **My tasks** — the default view: the tasks a person is involved in.
+- **Semi-lead** — a core-team member responsible for an area.
 
 **Known conflict, unresolved by choice:** `CONTEXT.md` defines **Helper** as "a
 stated intention, not an assigned duty". This feature makes it a duty. The
@@ -299,14 +468,15 @@ product owner has seen the conflict and will resolve it separately.
 
 ---
 
-## 8. Handoff to `spec-design`
+## 10. Handoff to `spec-design`
 
-- The **signal** (section 1) becomes the acceptance criteria.
-- The **names** (section 7) become the spec's vocabulary.
-- The **converge decisions** (sections 3–5) are constraints, not suggestions. A
+- The **success and failure signals** (section 8) and the **participation
+  minimum** (section 6) become the acceptance criteria.
+- The **names** (section 9) become the spec's vocabulary.
+- The **converge decisions** (sections 3–7) are constraints, not suggestions. A
   spec that contradicts one is a real conflict: raise it rather than resolve it
   silently.
 - The **open assumptions** (section 2) are what the first build exists to test.
 
-A spec should not be written against section 6 while it still says *not done*
+A spec should not be written against section 8 while it still says *not done*
 without that being a conscious decision.

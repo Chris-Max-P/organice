@@ -1,4 +1,4 @@
-/* Tasks page — see docs/specs/spec-frontend.md, section 12 */
+/* Tasks page — see docs/design/tasks.md, "Core-team task page (first slice)" */
 
 .tasks {
   display: grid;

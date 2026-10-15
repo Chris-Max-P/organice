@@ -7,5 +7,5 @@
 **Status:** ready-for-agent
 
 - [ ] The app can be installed to the home screen on current iOS and Android browsers
-- [ ] Launching from the home screen opens the helper's dashboard directly
+- [ ] Launching from the home screen opens the helper's "my tasks" view directly
 - [ ] The helper's identity survives closing and reopening the installed app

@@ -1,4 +1,4 @@
-// Tasks page: create form + task list — see docs/specs/spec-frontend.md, section 12
+// Tasks page: create form + task list — see docs/design/tasks.md, "Core-team task page (first slice)"
 
 import { createWidgetCard } from '../../shared/widget-card/widget-card.js';
 import { createTask, fetchTasks } from './tasks.api.js';

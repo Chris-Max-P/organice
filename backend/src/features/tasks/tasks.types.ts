@@ -1,4 +1,4 @@
-// Tasks API types — see docs/specs/spec-backend.md, section 11
+// Tasks API types — see docs/design/tasks.md, "Core-team task page (first slice)"
 
 export interface Task {
   id: number;

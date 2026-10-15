@@ -2,7 +2,7 @@
 
 **What to build:** the persistence layer of the existing Express backend, as decided in ADR-005. The backend opens a PGlite database that persists to a local data folder, applies versioned schema migrations on startup, and hands the database to the feature routers. Tests get a fresh in-memory database. Switching to a PostgreSQL server later means changing the driver and a connection string, not the queries.
 
-Source: `docs/adr/ADR-005-persistence.md`. This is a shared `core/` module in the backend (backend spec, section 3), used by the `tasks` feature from ticket 01 onwards. It creates no feature tables itself.
+Source: `docs/adr/ADR-005-persistence.md`. This is a shared `core/` module in the backend (`docs/specs/backend.md`, "Database"), used by the `tasks` feature from ticket 01 onwards. It creates no feature tables itself.
 
 **Blocked by:** no other ticket. Decisions:
 

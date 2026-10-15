@@ -1,14 +1,16 @@
 # 05: Task fields
 
-**What to build:** a task carries a deadline, a budget (money the helper may spend), a category (muss / soll / kann / darf) and the number of helpers needed. A task can be assigned to more than one helper. Helpers see these fields on their tasks; the core team sets them.
+**What to build:** a task carries a deadline, a budget (money the helper may spend) and a category (muss / soll / kann / darf). The core team sets the fields; helpers see them on their tasks, together with who else is involved.
+
+Data: adds `tasks.deadline`, `tasks.budget` and `tasks.category` (tasks design, "Data model").
 
 **Blocked by:** 02
 
 **Status:** ready-for-agent
 
-- [ ] A core-team member can set deadline, budget, category and helpers needed
+- [ ] A core-team member can set deadline, budget and category
 - [ ] Category is limited to muss / soll / kann / darf
-- [ ] A task can be assigned to several helpers, and each sees it on their dashboard
-- [ ] Helpers see the fields on their tasks but never see who else is assigned
+- [ ] Helpers can view but not change deadline, budget and category
+- [ ] Helpers see who else is involved in their task
 - [ ] The core-team task view shows the fields
-- [ ] Tests cover the fields, category validation and multi-helper assignment
+- [ ] Tests cover the fields, category validation, and that helpers can't change them
