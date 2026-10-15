@@ -1,4 +1,4 @@
-// Payment model — see docs/specs/spec-backend.md, section 6
+// Payment model — see docs/specs/dashboard.md, "Payment matching"
 // A Payment only ever originates from a received payment mail (section 3),
 // so there is no "open" status here — that only exists as a derived TicketEntry status.
 

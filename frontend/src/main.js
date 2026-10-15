@@ -1,11 +1,11 @@
-// Entry point — see docs/specs/spec-frontend.md, sections 3, 6, 12
+// Entry point — see docs/specs/frontend.md, "Project structure", "Navigation"
 
 import { startRouter } from './core/router.js';
 import { mount as mountFinance } from './features/finance/finance-widget.js';
 import { mount as mountParticipants } from './features/participants/participants-widget.js';
 import { mount as mountTasks } from './features/tasks/tasks-page.js';
 
-/** Order on the dashboard — see docs/specs/spec-frontend.md, section 5 */
+/** Order on the dashboard — see docs/design/admin-dashboard.md, "Scope" */
 const WIDGETS = [mountParticipants, mountFinance];
 
 /**

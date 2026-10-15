@@ -9,7 +9,7 @@ The app has two distinct user groups with different requirements:
   distributed, see [ADR-001](./ADR-001-frontend-stack.md).
 - **Administrators/core team** — use the event dashboard (participant overview,
   finance figures, Google Sheet and mail integration) exclusively locally.
-  According to the backend spec, the dashboard is core-team-only anyway, without
+  According to [backend.md](../specs/backend.md), the dashboard is core-team-only anyway, without
   roles or access control for now.
 
 ADR-001 specifies a PWA for the end-user app (offline capability, manifest,
@@ -30,7 +30,7 @@ ADR-001 (Angular PWA) applies exclusively to the end-user app.
 ## Rationale
 - Avoids unnecessary PWA complexity for a tool used locally by one person or a
   small team
-- Fits the core-team-only scope of the backend spec — no access control needed,
+- Fits the core-team-only scope of [backend.md](../specs/backend.md) — no access control needed,
   since there is no external access from distributed devices
 - Decouples release cycles: dashboard changes require no rollout to end-user
   devices

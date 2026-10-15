@@ -1,4 +1,4 @@
-// Server entry point — see docs/specs/spec-backend.md, section 9
+// Server entry point — see docs/specs/backend.md, "Startup"
 
 import { createApp } from './app.js';
 import { openDatabase } from './core/database/database.js';

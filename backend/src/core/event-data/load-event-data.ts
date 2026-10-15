@@ -1,4 +1,4 @@
-// Loads sheet + mails once at startup — see docs/specs/spec-backend.md, section 9
+// Loads sheet + mails once at startup — see docs/specs/dashboard-backend.md, "Event data at startup"
 
 import { GoogleSheetsService } from '../integrations/google-sheets/google-sheets.service.js';
 import { MailService } from '../integrations/mail/mail.service.js';

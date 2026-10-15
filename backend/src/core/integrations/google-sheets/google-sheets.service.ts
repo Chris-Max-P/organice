@@ -1,4 +1,4 @@
-// Google Sheets integration — see docs/specs/spec-backend.md, section 2
+// Google Sheets integration — see docs/specs/dashboard-backend.md, "Google Sheets integration"
 
 import { config } from 'dotenv';
 import { GoogleAuth } from 'google-auth-library';

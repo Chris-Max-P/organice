@@ -1,4 +1,4 @@
-// Payment matching service — see docs/specs/spec-backend.md, section 6
+// Payment matching service — see docs/specs/dashboard.md, "Payment matching"
 
 import { randomUUID } from 'node:crypto';
 import { MailMessage } from '../integrations/mail/mail.types.js';

@@ -1,4 +1,4 @@
-// Participants endpoint — see docs/specs/spec-frontend.md, section 4
+// Participants endpoint — see docs/specs/frontend.md, "Backend access"
 
 import { getJson } from '../../core/http.js';
 

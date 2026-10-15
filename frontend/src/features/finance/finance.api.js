@@ -1,4 +1,4 @@
-// Finance endpoint — see docs/specs/spec-frontend.md, section 4
+// Finance endpoint — see docs/specs/frontend.md, "Backend access"
 
 import { getJson } from '../../core/http.js';
 

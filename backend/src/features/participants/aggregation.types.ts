@@ -1,4 +1,4 @@
-// Aggregation model — see docs/specs/spec-backend.md, section 7
+// Aggregation model — see docs/specs/dashboard.md, "Participant overview"
 
 export interface AggregationEntry {
   firstName: string;

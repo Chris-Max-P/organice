@@ -1,4 +1,4 @@
-// Aggregation service — see docs/specs/spec-backend.md, section 7
+// Aggregation service — see docs/specs/dashboard.md, "Participant overview"
 
 import { TicketEntry } from '../../core/ticket-model/ticket-model.types.js';
 import { AggregationGroup } from './aggregation.types.js';

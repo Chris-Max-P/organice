@@ -1,4 +1,4 @@
-// Hash router — see docs/specs/spec-frontend.md, section 12
+// Hash router — see docs/specs/frontend.md, "Navigation"
 
 /**
  * @typedef {(outlet: HTMLElement) => void} MountPage

@@ -1,4 +1,4 @@
-// Finance overview — see docs/specs/spec-frontend.md, section 6.3
+// Finance overview — see docs/specs/dashboard.md, "Finance overview"
 
 import { formatCurrency } from '../../shared/format.js';
 import { createWidgetCard } from '../../shared/widget-card/widget-card.js';

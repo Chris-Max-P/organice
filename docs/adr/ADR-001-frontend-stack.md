@@ -44,3 +44,10 @@ iOS/Android apps.
 - The PWA's iOS limitations (push only from iOS 16.4, no store listing) are
   accepted for now
 - The migration path to native apps stays open, without committing early
+- **Currently deviated from**: the helper PWA (tasks, ticket 02) is built as
+  plain HTML/CSS/JavaScript without a build step, for the same Node-version
+  reason as the dashboard frontend (see ADR-004). It consists of a hand-written
+  web app manifest and a hand-written service worker used for Web Push
+  (notifying everyone involved in a task when an update is written); the backend sends pushes with the `web-push` npm
+  package. No offline caching. Migration to Angular + `@angular/pwa` happens
+  together with the dashboard's

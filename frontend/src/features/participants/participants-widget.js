@@ -1,4 +1,4 @@
-// Participant overview — see docs/specs/spec-frontend.md, section 6.2
+// Participant overview — see docs/specs/dashboard.md, "Participant overview"
 
 import { formatCount } from '../../shared/format.js';
 import { createSegmentedControl } from '../../shared/segmented-control/segmented-control.js';

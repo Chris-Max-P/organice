@@ -1,4 +1,4 @@
-// Participants API model — see docs/specs/spec-backend.md, section 9
+// Participants API model — see docs/specs/dashboard.md, "Participant overview"
 
 export type GroupByField = 'category' | 'wantsToHelp';
 

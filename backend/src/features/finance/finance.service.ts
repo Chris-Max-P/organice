@@ -1,4 +1,4 @@
-// Finance service — see docs/specs/spec-backend.md, section 8
+// Finance service — see docs/specs/dashboard.md, "Finance overview"
 
 import { PaymentMatchingService } from '../../core/payment-matching/payment-matching.service.js';
 import { Payment } from '../../core/payment-matching/payment-matching.types.js';

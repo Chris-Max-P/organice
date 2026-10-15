@@ -1,4 +1,4 @@
-// Shared widget chrome and states — see docs/specs/spec-frontend.md, sections 6.1, 7
+// Shared widget chrome and states — see docs/specs/dashboard-frontend.md, "Widget card"
 
 const LOADING_TEXT = 'Wird geladen …';
 const DEFAULT_ERROR_TEXT = 'Daten konnten nicht geladen werden';

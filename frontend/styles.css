@@ -1,4 +1,4 @@
-/* Design tokens, base and page layout — see docs/specs/spec-frontend.md, sections 3, 5 */
+/* Design tokens, base and page layout — see docs/specs/frontend.md, docs/specs/dashboard-frontend.md */
 
 @import url("src/shared/widget-card/widget-card.css");
 @import url("src/shared/segmented-control/segmented-control.css");

@@ -10,7 +10,7 @@ for the server-side Google Sheet/mail integration were:
 - Server-side code within an Angular SSR app (`@angular/ssr`)
 - A standalone Node/Express backend, decoupled from Angular
 
-The backend spec (section 2, Google integration service) requires the sheet link
+[dashboard-backend.md](../specs/dashboard-backend.md) ("Google Sheets integration") requires the sheet link
 (a secret) and Google sheet access to stay strictly server-side and never end up
 in the frontend bundle. With Angular SSR, this separation is not structurally
 enforced but has to be actively ensured through the build setup — with the risk
@@ -49,15 +49,15 @@ JSON over REST, never pre-rendered HTML pages.
 
 ## Consequences
 - Node/Express serves only JSON over REST endpoints; for the concrete structure
-  of the endpoints see the backend spec, section 9
+  of the endpoints see [backend.md](../specs/backend.md), "HTTP"
 - No code sharing (components/templates) between the end-user PWA and the
   dashboard; TypeScript interfaces/models can still be shared if needed. The
   dashboard frontend currently copies the three response interfaces rather than
-  extracting a shared package — see the frontend spec, section 4
+  extracting a shared package — see [frontend.md](../specs/frontend.md), "Backend access"
 - Sheet data needs no persistence: it is loaded fresh from the sheet on every app
-  start and only held in memory (see backend spec, section 2)
+  start and only held in memory (see [dashboard-backend.md](../specs/dashboard-backend.md), "Event data at startup")
 - Payment status likewise needs no persistence: it is rebuilt from the mails on
-  every app start (see backend spec, section 6). Consequence: manual corrections
+  every app start (see [dashboard.md](../specs/dashboard.md), "Payment matching"). Consequence: manual corrections
   do not survive a restart, accepted for the MVP given the currently low mail
   volume
 - The dashboard backend therefore needs no database or persistence layer for now
@@ -67,5 +67,5 @@ JSON over REST, never pre-rendered HTML pages.
   plain HTML/CSS/JavaScript rather than Angular, because Angular 22 requires Node
   `^22.22.3 || ^24.15.0 || >=26` and the development machine runs Node v21.5.0.
   The frontend/backend split, the REST contract, and the secrets boundary are
-  unaffected — only the rendering technology. See the frontend spec, "Interim
-  deviation from ADR-004", for the migration back
+  unaffected — only the rendering technology. See [frontend.md](../specs/frontend.md), "Interim
+  deviation from ADR-004"

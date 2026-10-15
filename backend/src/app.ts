@@ -1,4 +1,4 @@
-// Express app factory — see docs/specs/spec-backend.md, section 9
+// Express app factory — see docs/specs/backend.md, "Code structure"
 
 import cors from 'cors';
 import express, { Express } from 'express';

@@ -38,7 +38,7 @@ AI-assisted using Claude.
 This `src/app` structure applies to the **end-user PWA**. The admin dashboard is
 a separate application ([ADR-003](./ADR-003-admin-dashboard-trennung.md)) but
 uses the same `core/ shared/ features/` split, in both its frontend and its
-backend — see the frontend spec, section 3, and the backend spec, "Code
+backend — see [frontend.md](../specs/frontend.md), "Project structure", and [backend.md](../specs/backend.md), "Code
 structure".
 
 ## Rationale
