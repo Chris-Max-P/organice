@@ -2,7 +2,7 @@
 
 **What to build:** the organiser side of tasks inside the existing core-team application. A core-team member opens the new "Aufgaben" menu item next to the dashboard, creates a task with a title and a description, and sees it in the task list. The description becomes the task's initial description and is also stored as update 1, the brief, which never changes.
 
-Source: `docs/design/tasks.md` ("Architectural consequence", "Data model"). This is a `tasks` feature folder in the existing core-team frontend (frontend spec, section 12) and the existing Express backend (backend spec, section 11), and it brings the first page-level navigation.
+Source: `docs/design/tasks.md` ("Architectural consequence", "Data model"). This is a `tasks` feature folder in the existing core-team frontend (`docs/specs/frontend.md`) and the existing Express backend (`docs/specs/backend.md`), and it brings the first page-level navigation.
 
 **Blocked by:** no other ticket. Decisions:
 
@@ -11,11 +11,11 @@ Source: `docs/design/tasks.md` ("Architectural consequence", "Data model"). This
 - [x] Frontend: the existing core-team frontend (the helper PWA's stack is decided in ticket 02)
 - [x] Persistence: PGlite now, a PostgreSQL server later ([ADR-005](../../../docs/adr/ADR-005-persistence.md)), set up in ticket 00
 - [x] Tables: this ticket adds `tasks` and `task_updates` (tasks design, "Data model"); `people` and `task_helpers` come with ticket 02
-- [x] API: `GET /tasks/all` and `POST /tasks` (backend spec, section 11)
+- [x] API: `GET /tasks/all` and `POST /tasks` (tasks design, "Core-team task page (first slice)")
 - [x] Brief immutability: there is no endpoint to edit or delete an update
 - [x] Brief author: the brief has no author (`author_id` is null); it always comes from the core team
 - [x] Navigation: a hand-written hash router (`#/` and `#/aufgaben`), about 15 lines; replaced when demand grows
-- [x] UI: create form above the list, one-line list items (frontend spec, section 12)
+- [x] UI: create form above the list, one-line list items (tasks design, "Core-team task page (first slice)")
 - [x] Tests: backend only; the frontend stays without automated tests for the prototype
 
 **Status:** done

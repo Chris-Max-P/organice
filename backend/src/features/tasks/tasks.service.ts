@@ -1,4 +1,4 @@
-// Task persistence — see docs/specs/spec-backend.md, section 11
+// Task persistence — see docs/design/tasks.md, "Core-team task page (first slice)"
 
 import { Kysely } from 'kysely';
 import { Database } from '../../core/database/database.types.js';

@@ -1,4 +1,4 @@
-// Tasks endpoints — see docs/specs/spec-frontend.md, section 4
+// Tasks endpoints — see docs/specs/frontend.md, "Backend access"
 
 import { getJson, postJson } from '../../core/http.js';
 
