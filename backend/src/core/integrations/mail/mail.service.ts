@@ -1,4 +1,4 @@
-// Mail integration — see docs/specs/spec-backend.md, section 3
+// Mail integration — see docs/specs/dashboard-backend.md, "Mail integration"
 
 import { config } from 'dotenv';
 import { ImapFlow, SearchObject } from 'imapflow';

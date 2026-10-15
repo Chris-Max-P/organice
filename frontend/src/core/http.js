@@ -1,4 +1,4 @@
-// HTTP helper for the backend REST API — see docs/specs/spec-frontend.md, section 4
+// HTTP helper for the backend REST API — see docs/specs/frontend.md, "Backend access"
 
 import { API_BASE_URL } from './config.js';
 

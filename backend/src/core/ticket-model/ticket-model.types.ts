@@ -1,4 +1,4 @@
-// TicketEntry model — see docs/specs/spec-backend.md, section 5
+// TicketEntry model — see docs/specs/dashboard.md, "Data sources"
 // firstName/lastName are kept in addition to the combined `name`, because the
 // payment matching service (section 6) needs them separately for the
 // initial+surname match.

@@ -1,4 +1,4 @@
-// Segmented button group — see docs/specs/spec-frontend.md, section 6.2
+// Segmented button group — see docs/specs/dashboard-frontend.md, "Segmented control"
 
 /**
  * @template {string} T

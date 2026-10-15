@@ -1,4 +1,4 @@
-/* Segmented control — see docs/specs/spec-frontend.md, section 6.2 */
+/* Segmented control — see docs/specs/dashboard-frontend.md, "Segmented control" */
 
 .segmented-control {
   display: flex;

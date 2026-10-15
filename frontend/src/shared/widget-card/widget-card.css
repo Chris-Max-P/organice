@@ -1,4 +1,4 @@
-/* Widget card — see docs/specs/spec-frontend.md, section 6.1 */
+/* Widget card — see docs/specs/dashboard-frontend.md, "Widget card" */
 
 .widget-card {
   background: var(--color-surface);

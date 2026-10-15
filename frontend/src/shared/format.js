@@ -1,4 +1,4 @@
-// de-DE formatting — see docs/specs/spec-frontend.md, sections 6.2, 6.3
+// de-DE formatting — see docs/specs/dashboard-frontend.md, "Formatting"
 
 const currencyFormatter = new Intl.NumberFormat('de-DE', {
   style: 'currency',

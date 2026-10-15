@@ -1,4 +1,4 @@
-// Ticket/participant model service — see docs/specs/spec-backend.md, section 5
+// Ticket/participant model service — see docs/specs/dashboard.md, "Data sources"
 
 import { SheetTable } from '../integrations/google-sheets/google-sheets.types.js';
 import { TicketEntry } from './ticket-model.types.js';

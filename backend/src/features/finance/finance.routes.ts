@@ -1,4 +1,4 @@
-// GET /dashboard/finance — see docs/specs/spec-backend.md, section 9
+// GET /dashboard/finance — see docs/specs/dashboard.md, "Finance overview"
 
 import { Router } from 'express';
 import { EventData } from '../../core/event-data/event-data.types.js';
