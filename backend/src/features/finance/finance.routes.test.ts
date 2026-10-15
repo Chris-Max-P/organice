@@ -1,8 +1,11 @@
 // Integration test of the finance route via supertest — see CLAUDE.md, step 3.
 
-import { describe, it, expect } from '@jest/globals';
+import { afterAll, beforeAll, describe, it, expect } from '@jest/globals';
+import { Kysely } from 'kysely';
 import request from 'supertest';
 import { createApp } from '../../app.js';
+import { openDatabase } from '../../core/database/database.js';
+import { Database } from '../../core/database/database.types.js';
 import { Payment } from '../../core/payment-matching/payment-matching.types.js';
 import { TicketEntry } from '../../core/ticket-model/ticket-model.types.js';
 
@@ -33,12 +36,22 @@ function buildPayment(overrides: Partial<Payment> = {}): Payment {
   };
 }
 
+let db: Kysely<Database>;
+
+beforeAll(async () => {
+  db = await openDatabase();
+});
+
+afterAll(async () => {
+  await db.destroy();
+});
+
 describe('GET /dashboard/finance', () => {
   it('returns the finance summary computed from TicketEntries and Payments', async () => {
     const ticketEntries = [buildTicket({ id: 2, price: 175 }), buildTicket({ id: 3, price: 160 })];
     const payments = [buildPayment({ ticketEntryRef: 2, status: 'paid' })];
 
-    const response = await request(createApp({ ticketEntries, payments })).get('/dashboard/finance');
+    const response = await request(createApp({ ticketEntries, payments }, db)).get('/dashboard/finance');
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ paid: 175, expected: 335 });

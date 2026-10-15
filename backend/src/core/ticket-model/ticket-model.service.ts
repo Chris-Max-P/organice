@@ -21,10 +21,6 @@ export class TicketModelService {
       const lastName = row[COLUMN_LAST_NAME] ?? '';
       const category = (row[COLUMN_CATEGORY] ?? '').trim();
       const priceMatch = category.match(PRICE_PATTERN);
-      if (!priceMatch) {
-        throw new Error(`No price found in ticket category: "${category}"`);
-      }
-      const price = Number(priceMatch[1]);
 
       return {
         id: index + 2,
@@ -33,7 +29,7 @@ export class TicketModelService {
         lastName,
         name: `${firstName} ${lastName}`.trim(),
         category,
-        price,
+        price: priceMatch ? Number(priceMatch[1]) : null,
         timestamp: row[COLUMN_TIMESTAMP] ?? '',
         wantsToHelp: row[COLUMN_WANTS_TO_HELP] ?? '',
       };

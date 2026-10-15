@@ -85,10 +85,10 @@ folder to folder.
 
 ```
 frontend/
-  index.html                    # page shell: header + one empty dashboard container
+  index.html                    # page shell: header with menu + one empty page container (#page)
   styles.css                    # design tokens, base, page layout; @imports all module CSS
   src/
-    main.js                     # entry point: list of widgets, one container each, mounts them
+    main.js                     # entry point: registers the pages with the router; the dashboard page mounts the widgets
     core/                       # app-wide plumbing, no UI
       config.js                 # API base URL
       http.js                   # getJson(), postJson(): fetch + response.ok check + JSON
@@ -132,7 +132,8 @@ its UI modules, and its CSS. Class names are prefixed with the feature name
 
 **Adding a feature**: create `src/features/<name>/`, add its CSS to the `@import`
 list at the top of `styles.css`, and add its `mount` function to the `WIDGETS`
-list in `main.js`. Nothing else changes.
+list in `main.js` (a widget) or register it as a page with the router in
+`main.js` and add a menu link in `index.html` (a page). Nothing else changes.
 
 `frontend/` is a standalone folder alongside `backend/`. It has no
 `package.json` and no dependencies of its own — the files are served exactly as
@@ -153,8 +154,8 @@ already sends permissive CORS headers, so no proxy is involved.
 | `GET /tasks/all` | `{ id, title, description }[]`, newest first |
 | `POST /tasks` with `{ title, description }` | `201` `{ id, title, description }`, or `400` `{ error }` |
 
-**Data access**: `core/http.js` exports `getJson(path)`, which wraps `fetch`,
-checks `response.ok`, and returns parsed JSON. Each feature's `<feature>.api.js`
+**Data access**: `core/http.js` exports `getJson(path)` and `postJson(path, body)`, which wrap `fetch`,
+check `response.ok`, and return parsed JSON. Each feature's `<feature>.api.js`
 exports one async function per endpoint on top of it. A non-2xx response or a
 network failure throws; the calling widget catches it and renders the error
 state (section 7).
@@ -166,7 +167,8 @@ running backend.
 feature's `<feature>.api.js`, which give editor autocompletion without a build
 step. They mirror the backend types in
 `backend/src/features/participants/aggregation.types.ts` and
-`backend/src/features/finance/finance.types.ts`; keep them in sync by hand.
+`backend/src/features/finance/finance.types.ts` and
+`backend/src/features/tasks/tasks.types.ts`; keep them in sync by hand.
 
 ---
 
@@ -193,7 +195,7 @@ table is the part most likely to need it.
 
 Each widget module exports a `mount(container)` function that renders itself into
 the given element and starts loading its data. `main.js` holds the ordered
-`WIDGETS` list, creates one container per entry inside `#dashboard`, and calls
+`WIDGETS` list, creates one container per entry inside the dashboard grid, and calls
 each `mount`. There is no shared state and no communication between widgets.
 
 ### 6.1 Widget card (shared)

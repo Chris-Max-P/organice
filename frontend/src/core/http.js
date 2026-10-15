@@ -7,7 +7,29 @@ import { API_BASE_URL } from './config.js';
  * @returns {Promise<unknown>}
  */
 export async function getJson(path) {
-  const response = await fetch(`${API_BASE_URL}${path}`);
+  return request(path);
+}
+
+/**
+ * @param {string} path
+ * @param {unknown} body
+ * @returns {Promise<unknown>}
+ */
+export async function postJson(path, body) {
+  return request(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * @param {string} path
+ * @param {RequestInit} [init]
+ * @returns {Promise<unknown>}
+ */
+async function request(path, init) {
+  const response = await fetch(`${API_BASE_URL}${path}`, init);
   if (!response.ok) {
     throw new Error(`${path} responded with ${response.status}`);
   }

@@ -18,17 +18,17 @@ Source: `docs/design/tasks.md` ("Architectural consequence", "Data model"). This
 - [x] UI: create form above the list, one-line list items (frontend spec, section 12)
 - [x] Tests: backend only; the frontend stays without automated tests for the prototype
 
-**Status:** ready
+**Status:** done
 
-- [ ] The core-team application has a menu with "Dashboard" and "Aufgaben", switched via hash routing
-- [ ] The database is passed to `createApp` and the tasks router uses it
-- [ ] Migration `0001-create-tasks` creates `tasks` and `task_updates`
-- [ ] A core-team member can create a task with a title and a description
-- [ ] A task cannot be created without a title or a description (`400`)
-- [ ] On creation, the description is stored on the task and as its first update (the brief), in one transaction
-- [ ] There is no endpoint to edit or delete an update
-- [ ] The task view lists all tasks of the event, newest first, one line each: title in bold, description truncated with an ellipsis, assigned helper names on the right (empty until ticket 02)
-- [ ] After saving, the form clears and the new task appears; a failed save shows an error next to the button
-- [ ] An empty list shows "Noch keine Aufgaben"
-- [ ] Tasks survive a backend restart
-- [ ] Backend tests cover task creation, the mandatory title and description, the brief stored as update 1, and the list order
+- [x] The core-team application has a menu with "Dashboard" and "Aufgaben", switched via hash routing
+- [x] The database is passed to `createApp` and the tasks router uses it
+- [x] Migration `0001-create-tasks` creates `tasks` and `task_updates`
+- [x] A core-team member can create a task with a title and a description
+- [x] A task cannot be created without a title or a description (`400`)
+- [x] On creation, the description is stored on the task and as its first update (the brief), in one transaction
+- [x] There is no endpoint to edit or delete an update
+- [x] The task view lists all tasks of the event, newest first, one line each: title in bold, description truncated with an ellipsis, assigned helper names on the right (empty until ticket 02)
+- [x] After saving, the form clears and the new task appears; a failed save shows an error next to the button
+- [x] An empty list shows "Noch keine Aufgaben"
+- [x] Tasks survive a backend restart
+- [x] Backend tests cover task creation, the mandatory title and description, the brief stored as update 1, and the list order

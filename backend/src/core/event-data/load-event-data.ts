@@ -5,9 +5,7 @@ import { MailService } from '../integrations/mail/mail.service.js';
 import { PaymentMatchingService } from '../payment-matching/payment-matching.service.js';
 import { TicketModelService } from '../ticket-model/ticket-model.service.js';
 import { EventData } from './event-data.types.js';
-
-// The event service is deferred (spec section 1) — scope is limited to a single event.
-export const EVENT_ID = 'default-event';
+import { EVENT_ID } from './event-id.js';
 
 const PAYMENT_MAIL_CRITERIA = {
   from: 'service@paypal.de',

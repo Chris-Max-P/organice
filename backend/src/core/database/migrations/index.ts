@@ -3,5 +3,8 @@
 // Keys are applied in alphabetical order: prefix them with a sequence number, e.g. '0001-create-tasks'.
 
 import { Migration } from 'kysely';
+import * as createTasks from './0001-create-tasks.js';
 
-export const migrations: Record<string, Migration> = {};
+export const migrations: Record<string, Migration> = {
+  '0001-create-tasks': createTasks,
+};
