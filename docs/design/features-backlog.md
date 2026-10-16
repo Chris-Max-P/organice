@@ -13,3 +13,4 @@
 - **Car pooling**
 - **Timetable** — food, workshops, music.
 - Multi-user, multi-event support
+- area-dashboard with blocks for each area that collect the information for that area (basically a filter)

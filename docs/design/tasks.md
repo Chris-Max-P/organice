@@ -13,15 +13,18 @@ planning is not part of this design.
 
 ### Core problems
 
-1. **Overview** — nobody knows where every task stands.
-2. **Coordination** — there is no place for targeted coordination. In WhatsApp,
+1. **Overview** — it is not easy to grasp what tasks we have to do in a given moment,
+   and how far we are with a given area of the festival.
+2. **Coordination is difficult** - In WhatsApp, 
    information gets lost in normal chats; many groups quickly become confusing.
-3. **Task knowledge** — information that belongs to a task and must be read by
-   those involved is not recorded clearly and cannot be retrieved in a targeted
-   way. Files are scattered.
-
-**Overload** of the main organiser is a *consequence* of missing overview, not
-a separate root problem.
+3. **Information spread** —
+   - **Duplicates** - even in the core orga team, people have a local duplicate of tasks or infos in their own notes,
+     making it hard to follow the current state. The same task exists in several
+     places, each with a different piece of what is known about it.
+   - Files that belong to a task or area lie somewhere in the cloud and are not easy to find
+4. **The capable tools are too complicated for everyone.** Notion and PM tools require setup and
+  demand that every helper learns them; most helpers have a simple job and
+  will not.
 
 ### How it is solved today
 
@@ -29,16 +32,6 @@ There is no single system for shared tasks: Notion, Asana, spreadsheets, Miro,
 WhatsApp and other messengers, in-person meetings. Tasks are distributed by a
 mix of self sign-up, direct asking and volunteering in meetings (see
 [general.md](./general.md), section 3).
-
-- **Tasks are never brought together.** Each tool holds a fragment; nobody has
-  the whole picture.
-- **Duplicates and scattered information.** The same task exists in several
-  places, each with a different piece of what is known about it.
-- **Status is not tracked in practice.** The tools could track it, but nobody
-  keeps it current.
-- **The capable tools are too complicated for everyone.** Notion and PM tools
-  demand that every helper learns them; most helpers have a simple job and
-  will not.
 
 ### Example: the forgotten ingredients
 

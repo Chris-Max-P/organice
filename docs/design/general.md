@@ -3,7 +3,7 @@
 *As of: 15 October 2026 — foundational document for further prompts
 (specification, product design, architecture)*
 
-## 1. Background
+# Background
 
 The preceding tool research in this project showed: there is no existing tool
 that covers governance, task organisation, finances, guest/travel planning, and
@@ -12,7 +12,12 @@ existing building blocks (Nextcloud, Loomio, Engelsystem, Open Collective …), 
 dedicated app is now to be developed — initially with a reduced, clearly
 delimited feature set.
 
-## 2. Context
+Currently, the success of a project depends on how structured the people work.
+A question of this organice-project is whether this can be enhanced with an app,
+to set guardrails that also help less structured people to get work done efficiently -
+or if the app if not used well gives no advantage at all.
+
+## 1. Context
 
 | | |
 |---|---|
@@ -31,7 +36,7 @@ delimited feature set.
 | 4 months before | Decoration, technology, further details |
 | 4 weeks before | Hot phase |
 
-## 3. How the team works today
+## 2. How the team works today
 
 ### Distributing tasks
 
@@ -82,7 +87,7 @@ Seen in at least two groups, both within the core team:
 deliberately simple so no overcomplicated structures emerge that hardly anyone
 understands.
 
-## 4. Roles
+## 3. Roles
 
 - **Core team** — creates and distributes tasks, sees everything. Some members
   are **semi-leads** for an area; that is a responsibility, not a separate role
@@ -92,11 +97,22 @@ understands.
 Details per feature live in the feature documents (e.g.
 [tasks.md](./tasks.md), "Who sees and edits what").
 
-## 5. Feature overview
+## 4. Problems
+The core problem is that a single organiser has no problems because he knows everything: which tools to use how,
+where information lie, he can make conventions that only he needs to follow.
+In a group this changes dramatically: information gets spread, conventions differ, tool usage patterns differ.
+The organisation becomes too complex to overview.
+
+# Solution
+
+## 1. Idea
+Possible solution: the app records information from a festivals perspective, not from an individuals perspective.
+
+## 2. Feature overview
 
 Each feature with a design doc has its own file in this folder. Features without one yet are listed in [features-backlog.md](./features-backlog.md).
 
-## 6. Principles
+## 3. Principles
 
 ### Simplicity guardrail
 
@@ -111,3 +127,7 @@ Each feature with a design doc has its own file in this folder. Features without
 1. replaces a recurring workaround observed at a real festival,
 2. requires helpers to learn nothing new, and
 3. can be distinguished from existing functions in one sentence.
+
+### Opinionated vs freedom
+The app has to find a balance between opinionated workflows that act as a guardrail
+for the orga team and freedom that lets the team custom the app so that it fits their needs.
